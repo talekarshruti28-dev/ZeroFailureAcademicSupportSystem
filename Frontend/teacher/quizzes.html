@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Teacher Quizzes - Zero-Failure</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f0fa;
+    color: #333;
+}
+
+
+/* HEADER */
+
+.header {
+    background: linear-gradient(135deg, #5420a8, #7b3fc5);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.header p {
+    margin: 5px 0 0;
+}
+
+.back-btn {
+    background: white;
+    color: #5420a8;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+/* CONTAINER */
+
+.container {
+    max-width: 1250px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+
+/* SUMMARY */
+
+.summary {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: white;
+    flex: 1;
+    min-width: 200px;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    text-align: center;
+}
+
+.summary-card h3 {
+    margin: 0;
+    color: #777;
+}
+
+.summary-card p {
+    font-size: 30px;
+    font-weight: bold;
+    color: #5420a8;
+    margin: 10px 0 0;
+}
+
+
+/* FILTERS */
+
+.filter-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    margin-bottom: 25px;
+}
+
+.filter-box h2 {
+    margin-top: 0;
+    color: #5420a8;
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filters input,
+.filters select {
+    flex: 1;
+    min-width: 220px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+}
+
+
+/* TABLE */
+
+.table-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+    padding: 13px;
+    text-align: left;
+}
+
+td {
+    padding: 13px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f7f3fb;
+}
+
+
+/* SCORE GRAPH */
+
+.score-graph {
+    width: 120px;
+    height: 18px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.score-fill {
+    height: 100%;
+}
+
+
+/* PERFORMANCE */
+
+.performance {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.excellent {
+    background: #d4edda;
+    color: #155724;
+}
+
+.good {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.average {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.needs {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+
+/* MESSAGE */
+
+.message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: none;
+}
+
+.error {
+    background: #fdecec;
+    color: #c82333;
+}
+
+.success {
+    background: #e9f8ed;
+    color: #218838;
+}
+
+
+/* MOBILE */
+
+@media(max-width:700px) {
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .summary {
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            Zero-Failure Academic Support System
+        </h1>
+
+        <p>
+            Teacher Quiz Results
+        </p>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goDashboard()">
+
+        Dashboard
+
+    </button>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- SUMMARY -->
+
+<div class="summary">
+
+
+    <div class="summary-card">
+
+        <h3>
+            Students
+        </h3>
+
+        <p id="studentCount">
+            0
+        </p>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            Quiz Attempts
+        </h3>
+
+        <p id="attemptCount">
+            0
+        </p>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            Average Percentage
+        </h3>
+
+        <p id="averageScore">
+            0%
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!-- MESSAGE -->
+
+<div
+    id="message"
+    class="message">
+</div>
+
+
+<!-- FILTER -->
+
+<div class="filter-box">
+
+    <h2>
+        Search Quiz Results
+    </h2>
+
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="searchStudent"
+            placeholder="Search student name or ID"
+        >
+
+
+        <select id="subjectFilter">
+
+            <option value="">
+                All Subjects
+            </option>
+
+            <option value="Machine Learning">
+                Machine Learning
+            </option>
+
+            <option value="Internet of Things">
+                Internet of Things
+            </option>
+
+            <option value="Big Data Analytics">
+                Big Data Analytics
+            </option>
+
+            <option value="Next Generation Technology">
+                Next Generation Technology
+            </option>
+
+            <option value="Enterprise Java">
+                Enterprise Java
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- RESULTS TABLE -->
+
+<div class="table-box">
+
+    <h2 style="color:#5420a8;">
+        Student Quiz Results
+    </h2>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Student
+                </th>
+
+                <th>
+                    Student ID
+                </th>
+
+                <th>
+                    Class
+                </th>
+
+                <th>
+                    Subject
+                </th>
+
+                <th>
+                    Marks
+                </th>
+
+                <th>
+                    Percentage
+                </th>
+
+                <th>
+                    Score Graph
+                </th>
+
+                <th>
+                    Performance
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="resultsBody">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   FLASK API
+   ========================================================= */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+/* Store results */
+
+let allResults = [];
+
+
+/* =========================================================
+   LOAD RESULTS
+   ========================================================= */
+
+async function loadResults() {
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "/api/teacher/quizzes/results",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            showMessage(
+                data.message ||
+                "Unable to load quiz results.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        allResults =
+            data.results || [];
+
+
+        displayResults(
+            allResults
+        );
+
+
+        updateSummary(
+            allResults
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "QUIZ RESULTS ERROR:",
+            error
+        );
+
+
+        showMessage(
+            "Cannot connect to server. Please make sure Flask is running on port 5000.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY RESULTS
+   ========================================================= */
+
+function displayResults(
+    results
+) {
+
+    const tbody =
+        document.getElementById(
+            "resultsBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    if (results.length === 0) {
+
+        tbody.innerHTML =
+
+            '<tr>' +
+
+            '<td colspan="8" ' +
+            'style="text-align:center;">' +
+
+            'No quiz results found.' +
+
+            '</td>' +
+
+            '</tr>';
+
+        return;
+    }
+
+
+    results.forEach(
+        result => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const percentage =
+                Number(
+                    result.percentage || 0
+                );
+
+
+            const score =
+                Number(
+                    result.score || 0
+                );
+
+
+            const total =
+                Number(
+                    result.total || 0
+                );
+
+
+            const performance =
+                result.performance ||
+                getPerformance(
+                    percentage
+                );
+
+
+            let performanceClass =
+                "";
+
+
+            if (percentage >= 80) {
+
+                performanceClass =
+                    "excellent";
+
+            }
+
+            else if (percentage >= 60) {
+
+                performanceClass =
+                    "good";
+
+            }
+
+            else if (percentage >= 40) {
+
+                performanceClass =
+                    "average";
+
+            }
+
+            else {
+
+                performanceClass =
+                    "needs";
+
+            }
+
+
+            row.innerHTML =
+
+                "<td>" +
+
+                escapeHTML(
+                    result.studentName ||
+                    "-"
+                ) +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                escapeHTML(
+                    result.studentId ||
+                    "-"
+                ) +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                escapeHTML(
+                    result.className ||
+                    "-"
+                ) +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                escapeHTML(
+                    result.subject ||
+                    "-"
+                ) +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                score +
+                " / " +
+                total +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                percentage.toFixed(2) +
+                "%"
+
+                +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                '<div class="score-graph">' +
+
+                '<div class="score-fill" ' +
+
+                'style="width:' +
+                percentage +
+                '%; background:' +
+                getScoreColor(
+                    percentage
+                ) +
+                ';">' +
+
+                '</div>' +
+
+                '</div>' +
+
+                "</td>" +
+
+
+                "<td>" +
+
+                '<span class="performance ' +
+                performanceClass +
+                '">' +
+
+                escapeHTML(
+                    performance
+                ) +
+
+                "</span>" +
+
+                "</td>";
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+function updateSummary(
+    results
+) {
+
+    const students =
+        new Set();
+
+
+    let totalPercentage =
+        0;
+
+
+    results.forEach(
+        result => {
+
+            if (result.studentId) {
+
+                students.add(
+                    result.studentId
+                );
+
+            }
+
+
+            totalPercentage +=
+                Number(
+                    result.percentage || 0
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "studentCount"
+    ).innerText =
+        students.size;
+
+
+    document.getElementById(
+        "attemptCount"
+    ).innerText =
+        results.length;
+
+
+    const average =
+        results.length > 0
+        ? totalPercentage /
+          results.length
+        : 0;
+
+
+    document.getElementById(
+        "averageScore"
+    ).innerText =
+        average.toFixed(2) + "%";
+
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+document.getElementById(
+    "searchStudent"
+).addEventListener(
+    "input",
+    filterResults
+);
+
+
+/* =========================================================
+   SUBJECT FILTER
+   ========================================================= */
+
+document.getElementById(
+    "subjectFilter"
+).addEventListener(
+    "change",
+    filterResults
+);
+
+
+/* =========================================================
+   FILTER RESULTS
+   ========================================================= */
+
+function filterResults() {
+
+    const search =
+        document.getElementById(
+            "searchStudent"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    const subject =
+        document.getElementById(
+            "subjectFilter"
+        ).value;
+
+
+    const filtered =
+        allResults.filter(
+            result => {
+
+                const name =
+                    (
+                        result.studentName ||
+                        ""
+                    ).toLowerCase();
+
+
+                const id =
+                    (
+                        result.studentId ||
+                        ""
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    name.includes(search) ||
+                    id.includes(search);
+
+
+                const matchesSubject =
+                    !subject ||
+                    result.subject === subject;
+
+
+                return (
+                    matchesSearch &&
+                    matchesSubject
+                );
+
+            }
+        );
+
+
+    displayResults(
+        filtered
+    );
+
+
+    updateSummary(
+        filtered
+    );
+
+}
+
+
+/* =========================================================
+   PERFORMANCE
+   ========================================================= */
+
+function getPerformance(
+    percentage
+) {
+
+    if (percentage >= 80) {
+
+        return "Excellent";
+
+    }
+
+    if (percentage >= 60) {
+
+        return "Good";
+
+    }
+
+    if (percentage >= 40) {
+
+        return "Average";
+
+    }
+
+    return "Needs Improvement";
+
+}
+
+
+/* =========================================================
+   SCORE COLOR
+   ========================================================= */
+
+function getScoreColor(
+    percentage
+) {
+
+    if (percentage >= 80) {
+
+        return "#28a745";
+
+    }
+
+    if (percentage >= 60) {
+
+        return "#007bff";
+
+    }
+
+    if (percentage >= 40) {
+
+        return "#f39c12";
+
+    }
+
+    return "#dc3545";
+
+}
+
+
+/* =========================================================
+   HTML SAFETY
+   ========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.innerText =
+        text;
+
+
+    message.className =
+        "message " + type;
+
+
+    message.style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function goDashboard() {
+
+    window.location.href =
+        API_URL +
+        "/teacher/dashboard.html";
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+loadResults();
+
+</script>
+
+</body>
+
+</html>

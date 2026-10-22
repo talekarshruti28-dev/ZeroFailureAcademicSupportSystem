@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Student Profile</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f3fa;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+    max-width: 700px;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 11px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+}
+
+button {
+    padding: 11px 20px;
+    background: #5420a8;
+    color: white;
+    border: none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>My Profile</h2>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<form id="profileForm">
+
+<label>Name</label>
+
+<input id="name">
+
+<label>Email</label>
+
+<input id="email" disabled>
+
+<label>Student ID</label>
+
+<input id="studentId" disabled>
+
+<label>Class</label>
+
+<input id="className">
+
+<label>Course</label>
+
+<input id="course">
+
+<label>Semester</label>
+
+<input id="semester">
+
+<label>Phone</label>
+
+<input id="phone">
+
+<button type="submit">
+Update Profile
+</button>
+
+</form>
+
+<p id="message"></p>
+
+</div>
+
+</div>
+
+<script>
+
+async function loadProfile() {
+
+    const response =
+        await fetch(
+            "/api/student/profile"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    const s =
+        data.student;
+
+    document.getElementById(
+        "name"
+    ).value =
+        s.name || "";
+
+    document.getElementById(
+        "email"
+    ).value =
+        s.email || "";
+
+    document.getElementById(
+        "studentId"
+    ).value =
+        s.studentId || "";
+
+    document.getElementById(
+        "className"
+    ).value =
+        s.className || "";
+
+    document.getElementById(
+        "course"
+    ).value =
+        s.course || "";
+
+    document.getElementById(
+        "semester"
+    ).value =
+        s.semester || "";
+
+    document.getElementById(
+        "phone"
+    ).value =
+        s.phone || "";
+}
+
+
+document.getElementById(
+    "profileForm"
+).addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        const data = {
+
+            name:
+                document.getElementById(
+                    "name"
+                ).value,
+
+            className:
+                document.getElementById(
+                    "className"
+                ).value,
+
+            course:
+                document.getElementById(
+                    "course"
+                ).value,
+
+            semester:
+                document.getElementById(
+                    "semester"
+                ).value,
+
+            phone:
+                document.getElementById(
+                    "phone"
+                ).value
+        };
+
+        const response =
+            await fetch(
+                "/api/student/profile",
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(data)
+                }
+            );
+
+        const result =
+            await response.json();
+
+        document.getElementById(
+            "message"
+        ).innerText =
+            result.message;
+    }
+);
+
+loadProfile();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Child Performance</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f3fa;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>Child Performance</h2>
+</div>
+
+<div class="container">
+
+<h2 id="childName"></h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Subject</th>
+<th>Exam</th>
+<th>Marks</th>
+<th>Percentage</th>
+</tr>
+
+</thead>
+
+<tbody id="marksTable">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function loadPerformance() {
+
+    const response =
+        await fetch(
+            "/api/parent/performance"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    document.getElementById(
+        "childName"
+    ).innerText =
+        data.child.name;
+
+    const table =
+        document.getElementById(
+            "marksTable"
+        );
+
+    data.marks.forEach(
+        mark => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${mark.subject || "-"}
+                    </td>
+
+                    <td>
+                        ${mark.exam || "-"}
+                    </td>
+
+                    <td>
+                        ${mark.obtained}/${mark.maximum}
+                    </td>
+
+                    <td>
+                        ${mark.percentage}%
+                    </td>
+
+                </tr>
+            `;
+        }
+    );
+}
+
+loadPerformance();
+
+</script>
+
+</body>
+</html>

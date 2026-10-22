@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Child Attendance</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f3fa;
+    margin: 0;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+.summary {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>Child Attendance</h2>
+</div>
+
+<div class="container">
+
+<div class="summary">
+
+<h3>
+Attendance:
+<span id="percentage">0%</span>
+</h3>
+
+<p>
+Present:
+<span id="present">0</span>
+</p>
+
+<p>
+Absent:
+<span id="absent">0</span>
+</p>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Subject</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="table">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function loadAttendance() {
+
+    const response =
+        await fetch(
+            "/api/parent/attendance"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    document.getElementById(
+        "percentage"
+    ).innerText =
+        data.percentage + "%";
+
+    document.getElementById(
+        "present"
+    ).innerText =
+        data.present;
+
+    document.getElementById(
+        "absent"
+    ).innerText =
+        data.absent;
+
+    const table =
+        document.getElementById(
+            "table"
+        );
+
+    data.records.forEach(
+        record => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${new Date(
+                            record.date
+                        ).toLocaleDateString()}
+                    </td>
+
+                    <td>
+                        ${record.subject || "-"}
+                    </td>
+
+                    <td>
+                        ${record.status}
+                    </td>
+
+                </tr>
+            `;
+        }
+    );
+}
+
+loadAttendance();
+
+</script>
+
+</body>
+</html>

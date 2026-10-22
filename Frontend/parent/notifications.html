@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Parent Notifications</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f3fa;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+.notification {
+    background: white;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>Notifications</h2>
+</div>
+
+<div class="container" id="notifications">
+
+Loading...
+
+</div>
+
+<script>
+
+async function loadNotifications() {
+
+    const response =
+        await fetch(
+            "/api/notifications"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    const container =
+        document.getElementById(
+            "notifications"
+        );
+
+    container.innerHTML = "";
+
+    if (
+        data.notifications.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p>No notifications available.</p>";
+
+        return;
+    }
+
+    data.notifications.forEach(
+        notification => {
+
+            container.innerHTML += `
+
+                <div class="notification">
+
+                    <h3>
+                        ${notification.title || "Notification"}
+                    </h3>
+
+                    <p>
+                        ${notification.message || ""}
+                    </p>
+
+                </div>
+
+            `;
+        }
+    );
+}
+
+loadNotifications();
+
+</script>
+
+</body>
+</html>

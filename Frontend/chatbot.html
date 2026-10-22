@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Academic Assistant</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #5420a8, #7b3fc5);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 700px;
+            height: 80vh;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .chat-header {
+            background: linear-gradient(135deg, #5420a8, #7b3fc5);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .chat-header p {
+            margin: 6px 0 0;
+            font-size: 14px;
+        }
+
+        /* =========================================
+           CHAT AREA
+        ========================================= */
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f3fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        .bot {
+            background: white;
+            color: #333;
+            align-self: flex-start;
+            border: 1px solid #ddd;
+        }
+
+        .user {
+            background: #6f35b5;
+            color: white;
+            margin-left: auto;
+        }
+
+        /* =========================================
+           INPUT AREA
+        ========================================= */
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #ddd;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        #messageInput:focus {
+            border-color: #6f35b5;
+            box-shadow: 0 0 5px rgba(111, 53, 181, 0.3);
+        }
+
+        #sendButton {
+            padding: 13px 22px;
+            border: none;
+            border-radius: 10px;
+            background: #6f35b5;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #sendButton:hover {
+            background: #5420a8;
+        }
+
+        #sendButton:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* =========================================
+           TYPING MESSAGE
+        ========================================= */
+
+        .typing {
+            color: #777;
+            font-style: italic;
+        }
+
+        /* =========================================
+           AI RESPONSE TABLES
+        ========================================= */
+
+        .message.bot table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            background: white;
+            font-size: 14px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .message.bot th {
+            background: #6f35b5;
+            color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .message.bot td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            color: #333;
+            background: white;
+        }
+
+        .message.bot tr:nth-child(even) td {
+            background: #f5f3fa;
+        }
+
+        .message.bot tr:hover td {
+            background: #eee8f8;
+        }
+
+        /* =========================================
+           MARKDOWN HEADINGS
+        ========================================= */
+
+        .message.bot h1,
+        .message.bot h2,
+        .message.bot h3,
+        .message.bot h4 {
+            color: #5420a8;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .message.bot h1 {
+            font-size: 22px;
+        }
+
+        .message.bot h2 {
+            font-size: 20px;
+        }
+
+        .message.bot h3 {
+            font-size: 18px;
+        }
+
+        .message.bot h4 {
+            font-size: 16px;
+        }
+
+        /* =========================================
+           MARKDOWN LISTS
+        ========================================= */
+
+        .message.bot ul,
+        .message.bot ol {
+            padding-left: 25px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .message.bot li {
+            margin-bottom: 5px;
+        }
+
+        /* =========================================
+           MARKDOWN CODE
+        ========================================= */
+
+        .message.bot code {
+            background: #f0eafa;
+            color: #5420a8;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+        }
+
+        .message.bot pre {
+            background: #241735;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .message.bot pre code {
+            background: transparent;
+            color: white;
+            padding: 0;
+        }
+
+        /* =========================================
+           LINKS
+        ========================================= */
+
+        .message.bot a {
+            color: #5420a8;
+            font-weight: bold;
+        }
+
+        /* =========================================
+           BLOCKQUOTE
+        ========================================= */
+
+        .message.bot blockquote {
+            border-left: 4px solid #6f35b5;
+            margin: 10px 0;
+            padding-left: 12px;
+            color: #555;
+        }
+
+        /* =========================================
+           HORIZONTAL LINE
+        ========================================= */
+
+        .message.bot hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 15px 0;
+        }
+
+        /* =========================================
+           RESPONSIVE TABLE
+        ========================================= */
+
+        .message.bot {
+            overflow-x: auto;
+        }
+
+        /* =========================================
+           MOBILE RESPONSIVE DESIGN
+        ========================================= */
+
+        @media (max-width: 600px) {
+
+            .chat-container {
+                width: 95%;
+                height: 90vh;
+                border-radius: 15px;
+            }
+
+            .chat-header h2 {
+                font-size: 21px;
+            }
+
+            .chat-header p {
+                font-size: 12px;
+            }
+
+            .chat-box {
+                padding: 12px;
+            }
+
+            .message {
+                max-width: 90%;
+                font-size: 14px;
+            }
+
+            .input-area {
+                padding: 10px;
+            }
+
+            #messageInput {
+                font-size: 14px;
+            }
+
+            #sendButton {
+                padding: 12px 16px;
+            }
+
+            .message.bot table {
+                font-size: 12px;
+            }
+
+            .message.bot th,
+            .message.bot td {
+                padding: 7px;
+            }
+        }
+
+    </style>
+
+    <!-- Markdown Library -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+
+
+<body>
+
+<div class="chat-container">
+
+    <!-- =========================================
+         CHAT HEADER
+    ========================================= -->
+
+    <div class="chat-header">
+
+        <h2>🤖 AI Academic Assistant</h2>
+
+        <p>
+            Zero-Failure Academic Support System
+        </p>
+
+    </div>
+
+
+    <!-- =========================================
+         CHAT BOX
+    ========================================= -->
+
+    <div class="chat-box" id="chatBox">
+
+        <div class="message bot">
+
+            Hello! 👋 I am your AI Academic Assistant.
+
+            <br><br>
+
+            You can ask me about subjects, assignments,
+            quizzes, attendance, study plans, marks,
+            notifications, or general academic questions.
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         INPUT AREA
+    ========================================= -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Type your question..."
+            autocomplete="off"
+        >
+
+        <button
+            id="sendButton"
+            onclick="sendMessage()"
+        >
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   SEND MESSAGE
+========================================= */
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById("messageInput");
+
+    const button =
+        document.getElementById("sendButton");
+
+    const chatBox =
+        document.getElementById("chatBox");
+
+
+    const message =
+        input.value.trim();
+
+
+    /* Do nothing if input is empty */
+
+    if (!message) {
+        return;
+    }
+
+
+    /* =========================================
+       DISPLAY USER MESSAGE
+    ========================================= */
+
+    const userMessage =
+        document.createElement("div");
+
+    userMessage.className =
+        "message user";
+
+    userMessage.textContent =
+        message;
+
+    chatBox.appendChild(userMessage);
+
+
+    /* Clear input */
+
+    input.value = "";
+
+
+    /* =========================================
+       DISABLE SEND BUTTON
+    ========================================= */
+
+    button.disabled = true;
+
+    button.textContent =
+        "Thinking...";
+
+
+    /* =========================================
+       SHOW TYPING MESSAGE
+    ========================================= */
+
+    const typingMessage =
+        document.createElement("div");
+
+    typingMessage.className =
+        "message bot typing";
+
+    typingMessage.textContent =
+        "AI is thinking...";
+
+    chatBox.appendChild(typingMessage);
+
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+
+
+    try {
+
+        /* =========================================
+           SEND REQUEST TO FLASK
+        ========================================= */
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/api/chatbot/message",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+                }
+            );
+
+
+        /* =========================================
+           READ RESPONSE
+        ========================================= */
+
+        const data =
+            await response.json();
+
+
+        /* Remove typing message */
+
+        typingMessage.remove();
+
+
+        /* =========================================
+           CREATE BOT MESSAGE
+        ========================================= */
+
+        const botMessage =
+            document.createElement("div");
+
+        botMessage.className =
+            "message bot";
+
+
+        /* =========================================
+           DISPLAY AI RESPONSE
+        ========================================= */
+
+        if (data.success) {
+
+            /*
+             * marked.parse() converts
+             * Markdown into HTML.
+             *
+             * This allows the AI to display:
+             * - tables
+             * - headings
+             * - bullet points
+             * - numbered lists
+             * - bold text
+             * - code
+             */
+
+            botMessage.innerHTML =
+                marked.parse(data.reply);
+
+        } else {
+
+            botMessage.textContent =
+                data.message ||
+                "Unable to get a response.";
+
+        }
+
+
+        /* Add AI message */
+
+        chatBox.appendChild(botMessage);
+
+
+    } catch (error) {
+
+        /* =========================================
+           REMOVE TYPING MESSAGE
+        ========================================= */
+
+        typingMessage.remove();
+
+
+        /* =========================================
+           DISPLAY ERROR
+        ========================================= */
+
+        const errorMessage =
+            document.createElement("div");
+
+        errorMessage.className =
+            "message bot";
+
+        errorMessage.textContent =
+            "Unable to connect to the chatbot. " +
+            "Please make sure Flask and Ollama are running.";
+
+        chatBox.appendChild(errorMessage);
+
+
+        console.error(error);
+
+    }
+
+
+    /* =========================================
+       ENABLE BUTTON AGAIN
+    ========================================= */
+
+    button.disabled = false;
+
+    button.textContent =
+        "Send";
+
+
+    /* =========================================
+       SCROLL TO LATEST MESSAGE
+    ========================================= */
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+
+}
+
+
+/* =========================================
+   PRESS ENTER TO SEND
+========================================= */
+
+document
+    .getElementById("messageInput")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

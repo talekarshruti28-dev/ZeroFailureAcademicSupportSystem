@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Student Attendance</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f3fa;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #4b0082,
+                #6a5acd
+            );
+
+            color: white;
+            padding: 22px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.10);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #4b0082;
+        }
+
+        .session-card {
+            border-left: 6px solid #4b0082;
+        }
+
+        .session-details {
+            background: #f3efff;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .session-details p {
+            margin: 8px 0;
+        }
+
+        button {
+            background: #4b0082;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 7px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #6a5acd;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #markButton {
+            display: none;
+        }
+
+        .message {
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+            background: #e8f8e8;
+        }
+
+        .error {
+            color: red;
+            background: #ffecec;
+        }
+
+        .waiting {
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #4b0082;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .status-present {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: red;
+            font-weight: bold;
+        }
+
+        .no-records {
+            color: #777;
+            padding: 15px;
+        }
+
+        .refresh-text {
+            font-size: 13px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h2>Student Attendance</h2>
+
+</div>
+
+
+<div class="container">
+
+
+    <!-- ================================= -->
+    <!-- ACTIVE ATTENDANCE -->
+    <!-- ================================= -->
+
+    <div class="card session-card">
+
+        <h3>Current Attendance Session</h3>
+
+        <div
+            id="sessionDetails"
+            class="session-details"
+        >
+        </div>
+
+
+        <div
+            id="sessionMessage"
+            class="message waiting"
+        >
+            Checking attendance session...
+        </div>
+
+
+        <button
+            id="markButton"
+            onclick="markAttendance()"
+        >
+            MARK PRESENT
+        </button>
+
+
+        <div class="refresh-text">
+            This page automatically checks for a new
+            attendance session every 3 seconds.
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================= -->
+    <!-- ATTENDANCE HISTORY -->
+    <!-- ================================= -->
+
+    <div class="card">
+
+        <h3>My Attendance History</h3>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Date</th>
+
+                    <th>Subject</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="attendanceTable">
+
+                <tr>
+
+                    <td colspan="3"
+                        class="no-records">
+
+                        Loading attendance...
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   HELPER
+===================================================== */
+
+function showMessage(message, type) {
+
+    const element =
+        document.getElementById(
+            "sessionMessage"
+        );
+
+    element.innerText = message;
+
+    element.className =
+        "message " + type;
+
+}
+
+
+
+/* =====================================================
+   LOAD ATTENDANCE HISTORY
+===================================================== */
+
+async function loadAttendance() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/student/attendance"
+            );
+
+        const data =
+            await response.json();
+
+
+        const table =
+            document.getElementById(
+                "attendanceTable"
+            );
+
+
+        if (!response.ok || !data.success) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="3"
+                        class="no-records">
+                        Unable to load attendance.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        const records =
+            data.records || [];
+
+
+        if (records.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="3"
+                        class="no-records">
+                        No attendance records found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        table.innerHTML = "";
+
+
+        records.forEach(record => {
+
+            const row =
+                document.createElement("tr");
+
+
+            let date = "-";
+
+
+            if (record.date) {
+
+                try {
+
+                    date =
+                        new Date(
+                            record.date
+                        ).toLocaleDateString();
+
+                }
+                catch (error) {
+
+                    date = record.date;
+
+                }
+
+            }
+
+
+            let statusClass = "";
+
+
+            if (
+                record.status &&
+                record.status.toLowerCase()
+                    === "present"
+            ) {
+
+                statusClass =
+                    "status-present";
+
+            }
+
+
+            if (
+                record.status &&
+                record.status.toLowerCase()
+                    === "absent"
+            ) {
+
+                statusClass =
+                    "status-absent";
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${date}
+                </td>
+
+                <td>
+                    ${record.subject || "-"}
+                </td>
+
+                <td class="${statusClass}">
+                    ${record.status || "-"}
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        });
+
+
+    }
+    catch (error) {
+
+        console.log(
+            "Attendance history error:",
+            error
+        );
+
+
+        document.getElementById(
+            "attendanceTable"
+        ).innerHTML = `
+
+            <tr>
+
+                <td colspan="3"
+                    class="no-records">
+
+                    Cannot connect to server.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   CHECK ACTIVE ATTENDANCE SESSION
+===================================================== */
+
+async function checkActiveSession() {
+
+    const details =
+        document.getElementById(
+            "sessionDetails"
+        );
+
+
+    const button =
+        document.getElementById(
+            "markButton"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/student/attendance/active",
+                {
+                    credentials: "include"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Active attendance:",
+            data
+        );
+
+
+        /* -----------------------------------------
+           LOGIN / SERVER ERROR
+        ----------------------------------------- */
+
+        if (!response.ok || !data.success) {
+
+            details.innerHTML = "";
+
+            button.style.display =
+                "none";
+
+            showMessage(
+                data.message ||
+                "Unable to check attendance.",
+                "error"
+            );
+
+            return;
+        }
+
+
+
+        /* -----------------------------------------
+           NO ACTIVE SESSION
+        ----------------------------------------- */
+
+        if (!data.active) {
+
+            details.innerHTML = `
+
+                <p>
+                    <strong>Status:</strong>
+                    No active attendance
+                </p>
+
+                <p>
+                    Please wait for your teacher
+                    to start attendance.
+                </p>
+
+            `;
+
+
+            button.style.display =
+                "none";
+
+
+            showMessage(
+                "No attendance session is active right now.",
+                "waiting"
+            );
+
+
+            return;
+        }
+
+
+
+        /* -----------------------------------------
+           ACTIVE SESSION
+        ----------------------------------------- */
+
+        const session =
+            data.session;
+
+
+        details.innerHTML = `
+
+            <p>
+                <strong>Subject:</strong>
+                ${session.subject || "-"}
+            </p>
+
+            <p>
+                <strong>Class:</strong>
+                ${session.className || "-"}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+
+                <span class="status-present">
+                    ACTIVE
+                </span>
+
+            </p>
+
+        `;
+
+
+
+        /* -----------------------------------------
+           ALREADY MARKED
+        ----------------------------------------- */
+
+        if (data.marked) {
+
+            button.style.display =
+                "none";
+
+
+            showMessage(
+                "✓ You have already marked Present.",
+                "success"
+            );
+
+
+            return;
+        }
+
+
+
+        /* -----------------------------------------
+           NOT MARKED
+        ----------------------------------------- */
+
+        button.style.display =
+            "inline-block";
+
+
+        button.disabled =
+            false;
+
+
+        button.innerText =
+            "MARK PRESENT";
+
+
+        showMessage(
+            "Attendance is active. Please mark your attendance.",
+            "waiting"
+        );
+
+
+    }
+    catch (error) {
+
+        console.log(
+            "Active session error:",
+            error
+        );
+
+
+        button.style.display =
+            "none";
+
+
+        showMessage(
+            "Cannot connect to server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   MARK PRESENT
+===================================================== */
+
+async function markAttendance() {
+
+    const button =
+        document.getElementById(
+            "markButton"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.innerText =
+        "MARKING...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/student/attendance/mark",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({})
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Mark attendance:",
+            data
+        );
+
+
+        if (response.ok && data.success) {
+
+            button.style.display =
+                "none";
+
+
+            showMessage(
+                "✓ Attendance marked successfully!",
+                "success"
+            );
+
+
+            await loadAttendance();
+
+            await checkActiveSession();
+
+        }
+        else {
+
+            button.disabled =
+                false;
+
+
+            button.innerText =
+                "MARK PRESENT";
+
+
+            showMessage(
+                data.message ||
+                "Unable to mark attendance.",
+                "error"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        console.log(
+            "Mark attendance error:",
+            error
+        );
+
+
+        button.disabled =
+            false;
+
+
+        button.innerText =
+            "MARK PRESENT";
+
+
+        showMessage(
+            "Cannot connect to server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadAttendance();
+
+checkActiveSession();
+
+
+
+/* =====================================================
+   AUTOMATIC REFRESH
+===================================================== */
+
+setInterval(
+    checkActiveSession,
+    3000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register - Zero Failure</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #5420a8, #7b3fc5);
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 430px;
+            max-width: 95%;
+            padding: 30px;
+            border-radius: 15px;
+
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            text-align: center;
+            color: #5420a8;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+
+            border: 1px solid #ccc;
+            border-radius: 6px;
+
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #5420a8;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+
+            background: #5420a8;
+            color: white;
+
+            border: none;
+            border-radius: 6px;
+
+            margin-top: 20px;
+
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #401886;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #5420a8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Create Account</h1>
+
+    <form id="registerForm">
+
+        <label>Full Name</label>
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Enter full name"
+            required
+        >
+
+
+        <label>Email</label>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Enter email"
+            required
+        >
+
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Minimum 6 characters"
+            minlength="6"
+            required
+        >
+
+
+        <label>Role</label>
+
+        <select id="role" required>
+
+            <option value="">
+                Select Role
+            </option>
+
+            <option value="student">
+                Student
+            </option>
+
+            <option value="teacher">
+                Teacher
+            </option>
+
+            <option value="parent">
+                Parent
+            </option>
+
+        </select>
+
+
+        <!-- ================= STUDENT ================= -->
+
+        <div id="studentFields" class="hidden">
+
+            <label>Student ID</label>
+
+            <input
+                type="text"
+                id="studentId"
+                placeholder="Optional"
+            >
+
+
+            <label>Class</label>
+
+            <input
+                type="text"
+                id="className"
+                placeholder="Example: SYCS"
+            >
+
+
+            <label>Course</label>
+
+            <input
+                type="text"
+                id="course"
+                placeholder="Example: Computer Science"
+            >
+
+
+            <label>Semester</label>
+
+            <input
+                type="text"
+                id="semester"
+                placeholder="Example: 3"
+            >
+
+        </div>
+
+
+        <!-- ================= TEACHER ================= -->
+
+        <div id="teacherFields" class="hidden">
+
+            <label>Subject</label>
+
+            <input
+                type="text"
+                id="subject"
+                placeholder="Enter subject"
+            >
+
+
+            <label>Department</label>
+
+            <input
+                type="text"
+                id="department"
+                placeholder="Enter department"
+            >
+
+        </div>
+
+
+        <!-- ================= PARENT ================= -->
+
+        <div id="parentFields" class="hidden">
+
+            <label>Child Student ID</label>
+
+            <input
+                type="text"
+                id="childStudentId"
+                placeholder="Enter child student ID"
+            >
+
+        </div>
+
+
+        <button
+            type="submit"
+            id="registerButton"
+        >
+            Register
+        </button>
+
+    </form>
+
+
+    <p id="message"></p>
+
+
+    <div class="login-link">
+
+        Already registered?
+
+        <a href="http://127.0.0.1:5000/login.html">
+            Login
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const roleSelect =
+    document.getElementById("role");
+
+const studentFields =
+    document.getElementById("studentFields");
+
+const teacherFields =
+    document.getElementById("teacherFields");
+
+const parentFields =
+    document.getElementById("parentFields");
+
+const message =
+    document.getElementById("message");
+
+const registerButton =
+    document.getElementById("registerButton");
+
+
+// =====================================================
+// ROLE CHANGE
+// =====================================================
+
+roleSelect.addEventListener("change", function () {
+
+    studentFields.classList.add("hidden");
+
+    teacherFields.classList.add("hidden");
+
+    parentFields.classList.add("hidden");
+
+
+    if (this.value === "student") {
+
+        studentFields.classList.remove("hidden");
+
+    }
+
+
+    if (this.value === "teacher") {
+
+        teacherFields.classList.remove("hidden");
+
+    }
+
+
+    if (this.value === "parent") {
+
+        parentFields.classList.remove("hidden");
+
+    }
+
+});
+
+
+// =====================================================
+// REGISTRATION
+// =====================================================
+
+document
+.getElementById("registerForm")
+.addEventListener("submit", async function (event) {
+
+    event.preventDefault();
+
+
+    message.innerText = "Registering...";
+    message.style.color = "#5420a8";
+
+    registerButton.disabled = true;
+    registerButton.innerText = "Registering...";
+
+
+    const data = {
+
+        name:
+            document.getElementById("name").value.trim(),
+
+        email:
+            document.getElementById("email").value.trim(),
+
+        password:
+            document.getElementById("password").value,
+
+        role:
+            document.getElementById("role").value,
+
+        studentId:
+            document.getElementById("studentId").value.trim(),
+
+        className:
+            document.getElementById("className").value.trim(),
+
+        course:
+            document.getElementById("course").value.trim(),
+
+        semester:
+            document.getElementById("semester").value.trim(),
+
+        subject:
+            document.getElementById("subject").value.trim(),
+
+        department:
+            document.getElementById("department").value.trim(),
+
+        childStudentId:
+            document.getElementById("childStudentId").value.trim()
+
+    };
+
+
+    console.log("Sending registration data:", data);
+
+
+    try {
+
+        // IMPORTANT:
+        // Because register.html is served by Flask on port 5000,
+        // use the relative API URL.
+
+    
+        const response = await fetch(
+            "http://127.0.0.1:5000/api/register",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                credentials: "include",
+
+                body: JSON.stringify(data)
+            }
+        );
+
+
+        console.log(
+            "Server status:",
+            response.status
+        );
+
+
+        const text =
+            await response.text();
+
+
+        console.log(
+            "Server response:",
+            text
+        );
+
+
+        let result;
+
+
+        try {
+
+            result = JSON.parse(text);
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Server returned invalid response: " + text
+            );
+
+        }
+
+
+        message.innerText =
+            result.message || "Registration completed";
+
+
+        if (result.success) {
+
+            message.style.color = "green";
+
+
+            setTimeout(function () {
+
+                window.location.href =
+                    "http://127.0.0.1:5000/login.html";
+
+            }, 1000);
+
+
+        } else {
+
+            message.style.color = "red";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Registration error:",
+            error
+        );
+
+
+        message.innerText =
+            "Error: " + error.message;
+
+        message.style.color = "red";
+
+
+    } finally {
+
+        registerButton.disabled = false;
+
+        registerButton.innerText = "Register";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

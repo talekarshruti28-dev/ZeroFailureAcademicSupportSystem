@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Failure Risk Prediction</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f3fa;
+    margin: 0;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>AI Failure Risk Prediction</h2>
+</div>
+
+<div class="container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Student</th>
+<th>Attendance</th>
+<th>Average Marks</th>
+<th>Risk</th>
+</tr>
+
+</thead>
+
+<tbody id="predictionTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function loadPredictions() {
+
+    const response =
+        await fetch(
+            "/api/teacher/predictions"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    const table =
+        document.getElementById(
+            "predictionTable"
+        );
+
+    table.innerHTML = "";
+
+    data.predictions.forEach(
+        item => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${item.name}
+                    </td>
+
+                    <td>
+                        ${item.attendance}%
+                    </td>
+
+                    <td>
+                        ${item.averageMarks}%
+                    </td>
+
+                    <td>
+                        ${item.risk}
+                    </td>
+
+                </tr>
+            `;
+        }
+    );
+}
+
+loadPredictions();
+
+</script>
+
+</body>
+</html>

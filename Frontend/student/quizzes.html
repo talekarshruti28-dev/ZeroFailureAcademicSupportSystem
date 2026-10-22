@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Quizzes - Zero-Failure</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f0fa;
+    color: #333;
+}
+
+/* HEADER */
+
+.header {
+    background: linear-gradient(135deg, #5420a8, #7b3fc5);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.header p {
+    margin: 5px 0 0;
+    opacity: 0.9;
+}
+
+.back-btn {
+    background: white;
+    color: #5420a8;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* MAIN */
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* SUBJECTS */
+
+.subject-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    margin-bottom: 25px;
+}
+
+.subject-box h2 {
+    margin-top: 0;
+    color: #5420a8;
+}
+
+.subject-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.subject-btn {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #eee;
+    color: #5420a8;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.subject-btn:hover {
+    background: #5420a8;
+    color: white;
+}
+
+.subject-btn.active {
+    background: #5420a8;
+    color: white;
+}
+
+/* QUIZ */
+
+.quiz-container {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+}
+
+.quiz-title {
+    color: #5420a8;
+    margin-top: 0;
+}
+
+.question {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.question h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    background: #f7f7f7;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #eee;
+}
+
+.option input {
+    margin-right: 10px;
+}
+
+/* SUBMIT */
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: #5420a8;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #3d147d;
+}
+
+/* RESULT */
+
+.result {
+    display: none;
+    margin-top: 25px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+}
+
+.result h2 {
+    color: #5420a8;
+}
+
+.score-card {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.score-box {
+    flex: 1;
+    min-width: 180px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    background: #f5f1fa;
+}
+
+.score-box h3 {
+    margin: 0;
+    color: #777;
+}
+
+.score-box p {
+    font-size: 28px;
+    font-weight: bold;
+    color: #5420a8;
+    margin: 10px 0 0;
+}
+
+/* SCORE GRAPH */
+
+.graph-container {
+    margin: 25px 0;
+}
+
+.graph-row {
+    margin-bottom: 15px;
+}
+
+.graph-label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.bar-background {
+    height: 25px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    width: 0;
+    transition: width 1s;
+}
+
+.correct-bar {
+    background: #28a745;
+}
+
+.wrong-bar {
+    background: #dc3545;
+}
+
+/* ANSWER REVIEW */
+
+.review {
+    margin-top: 25px;
+}
+
+.answer-card {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+}
+
+.answer-card.correct {
+    background: #e9f8ed;
+    border-left: 6px solid #28a745;
+}
+
+.answer-card.wrong {
+    background: #fdecec;
+    border-left: 6px solid #dc3545;
+}
+
+.answer-card h4 {
+    margin-top: 0;
+}
+
+.correct-text {
+    color: #218838;
+    font-weight: bold;
+}
+
+.wrong-text {
+    color: #c82333;
+    font-weight: bold;
+}
+
+/* MESSAGE */
+
+.message {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    display: none;
+}
+
+.error {
+    background: #fdecec;
+    color: #c82333;
+}
+
+.success {
+    background: #e9f8ed;
+    color: #218838;
+}
+
+/* MOBILE */
+
+@media(max-width:700px) {
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .subject-buttons {
+        flex-direction: column;
+    }
+
+    .subject-btn {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div>
+        <h1>Zero-Failure Academic Support System</h1>
+        <p>Student Quiz</p>
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+        Dashboard
+    </button>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- SUBJECTS -->
+
+<div class="subject-box">
+
+    <h2>Select Subject</h2>
+
+    <div class="subject-buttons">
+
+        <button
+            class="subject-btn"
+            onclick="loadQuiz('Machine Learning', this)">
+            Machine Learning
+        </button>
+
+        <button
+            class="subject-btn"
+            onclick="loadQuiz('Internet of Things', this)">
+            Internet of Things
+        </button>
+
+        <button
+            class="subject-btn"
+            onclick="loadQuiz('Big Data Analytics', this)">
+            Big Data Analytics
+        </button>
+
+        <button
+            class="subject-btn"
+            onclick="loadQuiz('Next Generation Technology', this)">
+            Next Generation Technology
+        </button>
+
+        <button
+            class="subject-btn"
+            onclick="loadQuiz('Enterprise Java', this)">
+            Enterprise Java
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MESSAGE -->
+
+<div id="message" class="message"></div>
+
+
+<!-- QUIZ -->
+
+<div id="quizContainer" class="quiz-container">
+
+    <h2 id="quizTitle" class="quiz-title"></h2>
+
+    <p>
+        Answer all 10 questions and click
+        <b>Submit Quiz</b>.
+    </p>
+
+    <form id="quizForm">
+
+        <div id="questionsContainer"></div>
+
+        <button
+            type="submit"
+            class="submit-btn">
+            Submit Quiz
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div id="result" class="result">
+
+    <h2>Quiz Result</h2>
+
+    <div class="score-card">
+
+        <div class="score-box">
+
+            <h3>Marks</h3>
+
+            <p id="marks">
+                0 / 10
+            </p>
+
+        </div>
+
+
+        <div class="score-box">
+
+            <h3>Percentage</h3>
+
+            <p id="percentage">
+                0%
+            </p>
+
+        </div>
+
+
+        <div class="score-box">
+
+            <h3>Performance</h3>
+
+            <p id="performance">
+                -
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- GRAPH -->
+
+    <div class="graph-container">
+
+        <h3>Score Graph</h3>
+
+        <div class="graph-row">
+
+            <div class="graph-label">
+                Correct Answers
+            </div>
+
+            <div class="bar-background">
+
+                <div
+                    id="correctBar"
+                    class="bar correct-bar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="graph-row">
+
+            <div class="graph-label">
+                Wrong Answers
+            </div>
+
+            <div class="bar-background">
+
+                <div
+                    id="wrongBar"
+                    class="bar wrong-bar">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ANSWER REVIEW -->
+
+    <div class="review">
+
+        <h3>
+            Answer Review
+        </h3>
+
+        <div id="answerReview"></div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   FLASK API
+   ========================================================= */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+/* =========================================================
+   QUIZ QUESTIONS
+   ========================================================= */
+
+const quizzes = {
+
+
+    "Machine Learning": [
+
+        {
+            question: "Which type of learning uses labelled training data?",
+            options: [
+                "Supervised Learning",
+                "Unsupervised Learning",
+                "Reinforcement Learning",
+                "Random Learning"
+            ],
+            answer: "Supervised Learning"
+        },
+
+        {
+            question: "Which algorithm is commonly used for classification?",
+            options: [
+                "SVM",
+                "K-Means",
+                "PCA",
+                "Apriori"
+            ],
+            answer: "SVM"
+        },
+
+        {
+            question: "What does SVM stand for?",
+            options: [
+                "Support Vector Machine",
+                "Simple Vector Model",
+                "System Vector Method",
+                "Support Variable Machine"
+            ],
+            answer: "Support Vector Machine"
+        },
+
+        {
+            question: "Which algorithm is mainly used for clustering?",
+            options: [
+                "K-Means",
+                "Linear Regression",
+                "SVM",
+                "Naive Bayes"
+            ],
+            answer: "K-Means"
+        },
+
+        {
+            question: "Which method divides data into training and testing sets?",
+            options: [
+                "train_test_split",
+                "data_split_only",
+                "model_split",
+                "dataset_divide"
+            ],
+            answer: "train_test_split"
+        },
+
+        {
+            question: "What is overfitting?",
+            options: [
+                "Model performs well on training data but poorly on new data",
+                "Model has no training data",
+                "Model always gives random results",
+                "Model contains no features"
+            ],
+            answer: "Model performs well on training data but poorly on new data"
+        },
+
+        {
+            question: "Which Python library is commonly used for machine learning?",
+            options: [
+                "Scikit-learn",
+                "Flask",
+                "Tkinter",
+                "BeautifulSoup"
+            ],
+            answer: "Scikit-learn"
+        },
+
+        {
+            question: "Which algorithm is used for predicting continuous values?",
+            options: [
+                "Linear Regression",
+                "K-Means",
+                "Decision Tree Classifier",
+                "SVM Classifier"
+            ],
+            answer: "Linear Regression"
+        },
+
+        {
+            question: "What is a feature in machine learning?",
+            options: [
+                "An input variable",
+                "The final prediction",
+                "The database itself",
+                "The program output only"
+            ],
+            answer: "An input variable"
+        },
+
+        {
+            question: "What is classification?",
+            options: [
+                "Assigning data to predefined categories",
+                "Removing all data",
+                "Sorting files alphabetically",
+                "Deleting features"
+            ],
+            answer: "Assigning data to predefined categories"
+        }
+
+    ],
+
+
+    "Internet of Things": [
+
+        {
+            question: "What does IoT stand for?",
+            options: [
+                "Internet of Things",
+                "Internet of Technology",
+                "Input Output Technology",
+                "Integrated Online Tools"
+            ],
+            answer: "Internet of Things"
+        },
+
+        {
+            question: "Which device can collect physical data in an IoT system?",
+            options: [
+                "Sensor",
+                "Compiler",
+                "Text editor",
+                "Database table"
+            ],
+            answer: "Sensor"
+        },
+
+        {
+            question: "Which protocol is commonly used for lightweight IoT messaging?",
+            options: [
+                "MQTT",
+                "FTP",
+                "SMTP",
+                "POP3"
+            ],
+            answer: "MQTT"
+        },
+
+        {
+            question: "What does a sensor do?",
+            options: [
+                "Detects physical conditions",
+                "Only stores passwords",
+                "Creates databases",
+                "Compiles programs"
+            ],
+            answer: "Detects physical conditions"
+        },
+
+        {
+            question: "Which board is commonly used in IoT projects?",
+            options: [
+                "Arduino",
+                "Word processor",
+                "Printer",
+                "Scanner"
+            ],
+            answer: "Arduino"
+        },
+
+        {
+            question: "Which component can measure temperature?",
+            options: [
+                "Temperature sensor",
+                "LED",
+                "Buzzer",
+                "Switch only"
+            ],
+            answer: "Temperature sensor"
+        },
+
+        {
+            question: "What is an actuator?",
+            options: [
+                "A device that performs an action",
+                "A database",
+                "A programming language",
+                "A web browser"
+            ],
+            answer: "A device that performs an action"
+        },
+
+        {
+            question: "Which network technology can be used for IoT communication?",
+            options: [
+                "Wi-Fi",
+                "HTML",
+                "CSS",
+                "SQL"
+            ],
+            answer: "Wi-Fi"
+        },
+
+        {
+            question: "What is a smart home an example of?",
+            options: [
+                "IoT application",
+                "Operating system",
+                "Compiler",
+                "Spreadsheet"
+            ],
+            answer: "IoT application"
+        },
+
+        {
+            question: "What is the main purpose of IoT?",
+            options: [
+                "Connect devices to collect and exchange data",
+                "Only create websites",
+                "Only edit documents",
+                "Only store images"
+            ],
+            answer: "Connect devices to collect and exchange data"
+        }
+
+    ],
+
+
+    "Big Data Analytics": [
+
+        {
+            question: "What does Big Data refer to?",
+            options: [
+                "Very large and complex datasets",
+                "A small text file",
+                "A single image",
+                "Only spreadsheet formulas"
+            ],
+            answer: "Very large and complex datasets"
+        },
+
+        {
+            question: "Which is a characteristic of Big Data?",
+            options: [
+                "Volume",
+                "Keyboard",
+                "Monitor",
+                "Printer"
+            ],
+            answer: "Volume"
+        },
+
+        {
+            question: "Which technology is widely associated with distributed Big Data processing?",
+            options: [
+                "Hadoop",
+                "HTML",
+                "CSS",
+                "Photoshop"
+            ],
+            answer: "Hadoop"
+        },
+
+        {
+            question: "What does Volume represent in Big Data?",
+            options: [
+                "Amount of data",
+                "Speed of data",
+                "Type of data",
+                "Quality of monitor"
+            ],
+            answer: "Amount of data"
+        },
+
+        {
+            question: "What does Velocity represent?",
+            options: [
+                "Speed at which data is generated or processed",
+                "Size of a database",
+                "Color of data",
+                "Number of users only"
+            ],
+            answer: "Speed at which data is generated or processed"
+        },
+
+        {
+            question: "What does Variety refer to?",
+            options: [
+                "Different types and formats of data",
+                "Amount of storage",
+                "Processing speed",
+                "Network speed"
+            ],
+            answer: "Different types and formats of data"
+        },
+
+        {
+            question: "Which tool is used for distributed data processing?",
+            options: [
+                "Apache Spark",
+                "Notepad",
+                "Paint",
+                "Calculator"
+            ],
+            answer: "Apache Spark"
+        },
+
+        {
+            question: "What is data analytics?",
+            options: [
+                "Examining data to discover useful information",
+                "Deleting all data",
+                "Creating passwords",
+                "Formatting a computer"
+            ],
+            answer: "Examining data to discover useful information"
+        },
+
+        {
+            question: "Which type of data has no fixed tabular structure?",
+            options: [
+                "Unstructured data",
+                "Structured data",
+                "Relational table",
+                "Primary key"
+            ],
+            answer: "Unstructured data"
+        },
+
+        {
+            question: "Why is Big Data analytics useful?",
+            options: [
+                "It can help identify patterns and support decisions",
+                "It removes the need for computers",
+                "It prevents all data collection",
+                "It only creates websites"
+            ],
+            answer: "It can help identify patterns and support decisions"
+        }
+
+    ],
+
+
+    "Next Generation Technology": [
+
+        {
+            question: "Which technology provides immersive virtual environments?",
+            options: [
+                "Virtual Reality",
+                "SQL",
+                "HTML",
+                "FTP"
+            ],
+            answer: "Virtual Reality"
+        },
+
+        {
+            question: "AI stands for:",
+            options: [
+                "Artificial Intelligence",
+                "Automatic Internet",
+                "Advanced Input",
+                "Applied Information"
+            ],
+            answer: "Artificial Intelligence"
+        },
+
+        {
+            question: "Which technology connects physical devices and sensors?",
+            options: [
+                "IoT",
+                "Word processing",
+                "Spreadsheet",
+                "Email"
+            ],
+            answer: "IoT"
+        },
+
+        {
+            question: "Which technology is associated with distributed digital ledgers?",
+            options: [
+                "Blockchain",
+                "HTML",
+                "CSS",
+                "FTP"
+            ],
+            answer: "Blockchain"
+        },
+
+        {
+            question: "What is cloud computing?",
+            options: [
+                "Providing computing resources over a network",
+                "Only storing files on a USB",
+                "Printing documents",
+                "Creating animations"
+            ],
+            answer: "Providing computing resources over a network"
+        },
+
+        {
+            question: "Which technology is commonly associated with autonomous systems?",
+            options: [
+                "Artificial Intelligence",
+                "Word processing",
+                "HTML",
+                "Printer drivers"
+            ],
+            answer: "Artificial Intelligence"
+        },
+
+        {
+            question: "What is Augmented Reality?",
+            options: [
+                "Overlaying digital information onto the real world",
+                "Deleting digital information",
+                "Only playing audio",
+                "Only storing databases"
+            ],
+            answer: "Overlaying digital information onto the real world"
+        },
+
+        {
+            question: "Which technology can support secure distributed records?",
+            options: [
+                "Blockchain",
+                "CSS",
+                "JPEG",
+                "SMTP"
+            ],
+            answer: "Blockchain"
+        },
+
+        {
+            question: "What is edge computing?",
+            options: [
+                "Processing data closer to where it is generated",
+                "Deleting data at the edge",
+                "Only using desktop computers",
+                "Printing data"
+            ],
+            answer: "Processing data closer to where it is generated"
+        },
+
+        {
+            question: "Which technology is related to machines learning from data?",
+            options: [
+                "Machine Learning",
+                "HTML",
+                "FTP",
+                "Word processing"
+            ],
+            answer: "Machine Learning"
+        }
+
+    ],
+
+
+    "Enterprise Java": [
+
+        {
+            question: "What does JSP stand for?",
+            options: [
+                "JavaServer Pages",
+                "Java System Program",
+                "Java Service Protocol",
+                "Java Software Package"
+            ],
+            answer: "JavaServer Pages"
+        },
+
+        {
+            question: "What does JDBC provide?",
+            options: [
+                "Java database connectivity",
+                "Web page styling",
+                "Image editing",
+                "Operating system management"
+            ],
+            answer: "Java database connectivity"
+        },
+
+        {
+            question: "What is a Servlet?",
+            options: [
+                "A Java program that handles web requests",
+                "A database",
+                "An image format",
+                "A CSS file"
+            ],
+            answer: "A Java program that handles web requests"
+        },
+
+        {
+            question: "Which server can run Java web applications?",
+            options: [
+                "Apache Tomcat",
+                "MongoDB",
+                "MySQL",
+                "Notepad"
+            ],
+            answer: "Apache Tomcat"
+        },
+
+        {
+            question: "Which language is primarily used in Enterprise Java?",
+            options: [
+                "Java",
+                "Python",
+                "HTML",
+                "CSS"
+            ],
+            answer: "Java"
+        },
+
+        {
+            question: "What is JSP commonly used for?",
+            options: [
+                "Creating dynamic web pages",
+                "Managing hardware",
+                "Editing images",
+                "Formatting disks"
+            ],
+            answer: "Creating dynamic web pages"
+        },
+
+        {
+            question: "Which API is commonly used for Java database access?",
+            options: [
+                "JDBC",
+                "JSP",
+                "HTML",
+                "CSS"
+            ],
+            answer: "JDBC"
+        },
+
+        {
+            question: "What does HTTP define?",
+            options: [
+                "Rules for communication on the web",
+                "Database tables",
+                "Java classes",
+                "Image compression"
+            ],
+            answer: "Rules for communication on the web"
+        },
+
+        {
+            question: "Which component receives an HTTP request in a Java web application?",
+            options: [
+                "Servlet",
+                "Database",
+                "CSS",
+                "Image"
+            ],
+            answer: "Servlet"
+        },
+
+        {
+            question: "Which IDE can be used for Java Enterprise development?",
+            options: [
+                "Apache NetBeans",
+                "Paint",
+                "Calculator",
+                "Media Player"
+            ],
+            answer: "Apache NetBeans"
+        }
+
+    ]
+
+};
+
+
+/* =========================================================
+   CURRENT QUIZ
+   ========================================================= */
+
+let currentSubject = "";
+
+let currentQuestions = [];
+
+
+/* =========================================================
+   LOAD QUIZ
+   ========================================================= */
+
+function loadQuiz(subject, button) {
+
+    currentSubject = subject;
+
+    currentQuestions =
+        quizzes[subject];
+
+
+    /* Active button */
+
+    document
+        .querySelectorAll(".subject-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+    button.classList.add("active");
+
+
+    /* Hide old result */
+
+    document.getElementById(
+        "result"
+    ).style.display = "none";
+
+
+    /* Show quiz */
+
+    document.getElementById(
+        "quizContainer"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "quizTitle"
+    ).innerText =
+        subject + " Quiz";
+
+
+    const container =
+        document.getElementById(
+            "questionsContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    /* Create questions */
+
+    currentQuestions.forEach(
+        (q, index) => {
+
+            const questionDiv =
+                document.createElement("div");
+
+            questionDiv.className =
+                "question";
+
+
+            let html =
+                "<h3>" +
+                (index + 1) +
+                ". " +
+                q.question +
+                "</h3>";
+
+
+            q.options.forEach(
+                option => {
+
+                    html +=
+                        '<label class="option">' +
+
+                        '<input type="radio" ' +
+
+                        'name="question' +
+                        index +
+                        '" ' +
+
+                        'value="' +
+                        option.replace(/"/g, "&quot;") +
+                        '" required>' +
+
+                        option +
+
+                        '</label>';
+
+                }
+            );
+
+
+            questionDiv.innerHTML =
+                html;
+
+
+            container.appendChild(
+                questionDiv
+            );
+
+        }
+    );
+
+
+    window.scrollTo({
+        top: document
+            .getElementById("quizContainer")
+            .offsetTop - 20,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   SUBMIT QUIZ
+   ========================================================= */
+
+document.getElementById(
+    "quizForm"
+).addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        if (!currentSubject ||
+            currentQuestions.length === 0) {
+
+            showMessage(
+                "Please select a subject first.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        let score = 0;
+
+        const answers = [];
+
+
+        /* Check every answer */
+
+        currentQuestions.forEach(
+            (q, index) => {
+
+                const selected =
+                    document.querySelector(
+                        'input[name="question' +
+                        index +
+                        '"]:checked'
+                    );
+
+
+                const selectedAnswer =
+                    selected
+                    ? selected.value
+                    : "";
+
+
+                const isCorrect =
+                    selectedAnswer ===
+                    q.answer;
+
+
+                if (isCorrect) {
+                    score++;
+                }
+
+
+                answers.push({
+
+                    question:
+                        q.question,
+
+                    selectedAnswer:
+                        selectedAnswer,
+
+                    correctAnswer:
+                        q.answer,
+
+                    isCorrect:
+                        isCorrect
+
+                });
+
+            }
+        );
+
+
+        const total =
+            currentQuestions.length;
+
+
+        const percentage =
+            (score / total) * 100;
+
+
+        /* Performance */
+
+        let performance = "";
+
+
+        if (percentage >= 80) {
+
+            performance = "Excellent";
+
+        } else if (percentage >= 60) {
+
+            performance = "Good";
+
+        } else if (percentage >= 40) {
+
+            performance = "Average";
+
+        } else {
+
+            performance = "Needs Improvement";
+
+        }
+
+
+        /* Show result immediately */
+
+        showResult(
+            score,
+            total,
+            percentage,
+            performance,
+            answers
+        );
+
+
+        /* Save result to Flask */
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL +
+                    "/api/student/quizzes/result",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        credentials:
+                            "include",
+
+                        body:
+                            JSON.stringify({
+
+                                quizId:
+                                    currentSubject,
+
+                                subject:
+                                    currentSubject,
+
+                                score:
+                                    score,
+
+                                total:
+                                    total,
+
+                                answers:
+                                    answers
+
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                showMessage(
+                    data.message ||
+                    "Result was displayed but could not be saved.",
+                    "error"
+                );
+
+            } else {
+
+                showMessage(
+                    "Quiz completed and result saved successfully.",
+                    "success"
+                );
+
+            }
+
+        }
+
+        catch(error) {
+
+            console.error(
+                "QUIZ SAVE ERROR:",
+                error
+            );
+
+
+            showMessage(
+                "Your result is displayed, but it could not be saved to the server.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SHOW RESULT
+   ========================================================= */
+
+function showResult(
+    score,
+    total,
+    percentage,
+    performance,
+    answers
+) {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    result.style.display =
+        "block";
+
+
+    document.getElementById(
+        "marks"
+    ).innerText =
+        score + " / " + total;
+
+
+    document.getElementById(
+        "percentage"
+    ).innerText =
+        percentage.toFixed(2) + "%";
+
+
+    document.getElementById(
+        "performance"
+    ).innerText =
+        performance;
+
+
+    /* Count correct/wrong */
+
+    const correct =
+        answers.filter(
+            a => a.isCorrect
+        ).length;
+
+
+    const wrong =
+        total - correct;
+
+
+    /* Graph */
+
+    setTimeout(
+        function() {
+
+            document.getElementById(
+                "correctBar"
+            ).style.width =
+                (correct / total * 100) + "%";
+
+
+            document.getElementById(
+                "wrongBar"
+            ).style.width =
+                (wrong / total * 100) + "%";
+
+        },
+        100
+    );
+
+
+    /* Answer review */
+
+    const review =
+        document.getElementById(
+            "answerReview"
+        );
+
+
+    review.innerHTML = "";
+
+
+    answers.forEach(
+        (answer, index) => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                answer.isCorrect
+                ? "answer-card correct"
+                : "answer-card wrong";
+
+
+            if (answer.isCorrect) {
+
+                card.innerHTML =
+
+                    "<h4>" +
+                    (index + 1) +
+                    ". " +
+                    answer.question +
+                    "</h4>" +
+
+                    '<p class="correct-text">' +
+                    "✓ Correct Answer: " +
+                    answer.correctAnswer +
+                    "</p>" +
+
+                    "<p>" +
+                    "Your Answer: " +
+                    answer.selectedAnswer +
+                    "</p>";
+
+            } else {
+
+                card.innerHTML =
+
+                    "<h4>" +
+                    (index + 1) +
+                    ". " +
+                    answer.question +
+                    "</h4>" +
+
+                    '<p class="wrong-text">' +
+                    "✗ Your Answer: " +
+                    (
+                        answer.selectedAnswer ||
+                        "Not answered"
+                    ) +
+                    "</p>" +
+
+                    '<p class="correct-text">' +
+                    "✓ Correct Answer: " +
+                    answer.correctAnswer +
+                    "</p>";
+
+            }
+
+
+            review.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    /* Scroll to result */
+
+    setTimeout(
+        function() {
+
+            result.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        },
+        200
+    );
+
+}
+
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.innerText =
+        text;
+
+
+    message.className =
+        "message " + type;
+
+
+    message.style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function goDashboard() {
+
+    window.location.href =
+        API_URL +
+        "/student/dashboard.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

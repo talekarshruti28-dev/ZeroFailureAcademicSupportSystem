@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Student Dashboard</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f3fa;
+        }
+
+        .header {
+            background: #5420a8;
+            color: white;
+            padding: 20px;
+        }
+
+        .header h2 {
+            margin: 0 0 10px 0;
+        }
+
+        .header p {
+            margin: 0;
+        }
+
+        .nav {
+            background: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px #ddd;
+        }
+
+        .nav a {
+            margin-right: 18px;
+            color: #5420a8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            width: 200px;
+            min-height: 120px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px #ddd;
+        }
+
+        .card h3 {
+            color: #5420a8;
+            margin-top: 0;
+        }
+
+        .card p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        button {
+            background: #5420a8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #42158b;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<div class="header">
+
+    <h2>Student Dashboard</h2>
+
+    <p id="studentName">
+        Loading...
+    </p>
+
+</div>
+
+
+<!-- =========================================
+     NAVIGATION
+========================================= -->
+
+<div class="nav">
+
+    <a href="http://127.0.0.1:5000/student/dashboard.html">
+        Dashboard
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/profile.html">
+        Profile
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/attendance.html">
+        Attendance
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/marks.html">
+        Marks
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/quizzes.html">
+        Quizzes
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/study-plan.html">
+        Study Plan
+    </a>
+
+    <a href="http://127.0.0.1:5000/chatbot.html">
+        🤖 AI Chatbot
+    </a>
+
+    <a href="http://127.0.0.1:5000/student/notifications.html">
+        Notifications
+    </a>
+
+    <button onclick="logout()">
+        Logout
+    </button>
+
+</div>
+
+
+<!-- =========================================
+     DASHBOARD CONTENT
+========================================= -->
+
+<div class="container">
+
+    <div class="cards">
+
+
+        <!-- Attendance -->
+
+        <div class="card">
+
+            <h3>
+                Attendance
+            </h3>
+
+            <p id="attendance">
+                Loading...
+            </p>
+
+        </div>
+
+
+        <!-- Marks -->
+
+        <div class="card">
+
+            <h3>
+                Average Marks
+            </h3>
+
+            <p id="marks">
+                Loading...
+            </p>
+
+        </div>
+
+
+        <!-- Failure Risk -->
+
+        <div class="card">
+
+            <h3>
+                Failure Risk
+            </h3>
+
+            <p id="risk">
+                Loading...
+            </p>
+
+        </div>
+
+
+        <!-- Study Plan -->
+
+        <div class="card">
+
+            <h3>
+                Study Plan
+            </h3>
+
+            <p>
+                Personalized support
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   FLASK SERVER URL
+===================================================== */
+
+const API_URL = "http://127.0.0.1:5000";
+
+
+/* =====================================================
+   LOAD STUDENT DASHBOARD
+===================================================== */
+
+async function loadDashboard() {
+
+    try {
+
+
+        /* =============================================
+           GET LOGGED-IN USER
+        ============================================= */
+
+        const meResponse = await fetch(
+            API_URL + "/api/me",
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
+
+
+        if (!meResponse.ok) {
+
+            throw new Error(
+                "Unable to connect to Flask server."
+            );
+
+        }
+
+
+        const user = await meResponse.json();
+
+
+        /* =============================================
+           CHECK LOGIN
+        ============================================= */
+
+        if (!user.loggedIn) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+
+        }
+
+
+        /* =============================================
+           DISPLAY STUDENT NAME
+        ============================================= */
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            "Welcome, " + user.user.name;
+
+
+        /* =============================================
+           ATTENDANCE
+        ============================================= */
+
+        const attendanceResponse =
+            await fetch(
+                API_URL + "/api/student/attendance",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!attendanceResponse.ok) {
+
+            throw new Error(
+                "Unable to load attendance."
+            );
+
+        }
+
+
+        const attendanceData =
+            await attendanceResponse.json();
+
+
+        if (attendanceData.success) {
+
+            document.getElementById(
+                "attendance"
+            ).innerText =
+                attendanceData.percentage + "%";
+
+        }
+        else {
+
+            document.getElementById(
+                "attendance"
+            ).innerText =
+                "0%";
+
+        }
+
+
+        /* =============================================
+           MARKS
+        ============================================= */
+
+        const marksResponse =
+            await fetch(
+                API_URL + "/api/student/marks",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!marksResponse.ok) {
+
+            throw new Error(
+                "Unable to load marks."
+            );
+
+        }
+
+
+        const marksData =
+            await marksResponse.json();
+
+
+        let total = 0;
+
+
+        if (
+            marksData.records &&
+            marksData.records.length > 0
+        ) {
+
+            marksData.records.forEach(
+                item => {
+
+                    total += Number(
+                        item.percentage || 0
+                    );
+
+                }
+            );
+
+        }
+
+
+        const average =
+            marksData.records &&
+            marksData.records.length
+            ? total / marksData.records.length
+            : 0;
+
+
+        document.getElementById(
+            "marks"
+        ).innerText =
+            average.toFixed(2) + "%";
+
+
+        /* =============================================
+           FAILURE RISK / PREDICTION
+        ============================================= */
+
+        const predictionResponse =
+            await fetch(
+                API_URL + "/api/student/prediction",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!predictionResponse.ok) {
+
+            throw new Error(
+                "Unable to load prediction."
+            );
+
+        }
+
+
+        const predictionData =
+            await predictionResponse.json();
+
+
+        if (
+            predictionData.prediction &&
+            predictionData.prediction.risk
+        ) {
+
+            document.getElementById(
+                "risk"
+            ).innerText =
+                predictionData.prediction.risk;
+
+        }
+        else {
+
+            document.getElementById(
+                "risk"
+            ).innerText =
+                "Not Available";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Dashboard Error:",
+            error
+        );
+
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            "Cannot connect to server";
+
+
+        document.getElementById(
+            "attendance"
+        ).innerText =
+            "N/A";
+
+
+        document.getElementById(
+            "marks"
+        ).innerText =
+            "N/A";
+
+
+        document.getElementById(
+            "risk"
+        ).innerText =
+            "N/A";
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout() {
+
+    try {
+
+        await fetch(
+            API_URL + "/api/logout",
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+
+    window.location.href =
+        API_URL + "/login.html";
+
+}
+
+
+/* =====================================================
+   START DASHBOARD
+===================================================== */
+
+loadDashboard();
+
+</script>
+
+
+</body>
+
+</html>

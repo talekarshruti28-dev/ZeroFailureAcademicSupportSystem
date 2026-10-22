@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Study Plan</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(
+                135deg,
+                #4b0082,
+                #6a5acd
+            );
+
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: white;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            color: #4b0082;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #studentName {
+            color: #4b0082;
+            font-weight: bold;
+        }
+
+        .logout {
+            background: #4b0082;
+            color: white;
+
+            border: none;
+            border-radius: 6px;
+
+            padding: 9px 16px;
+
+            cursor: pointer;
+        }
+
+        /* MAIN */
+
+        .main {
+            width: 90%;
+            max-width: 1000px;
+
+            margin: 30px auto;
+        }
+
+        .heading {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .heading p {
+            font-size: 15px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: white;
+            border-radius: 12px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #4b0082;
+            margin-bottom: 20px;
+        }
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+            color: #444;
+        }
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            padding: 11px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            outline: none;
+
+            border-color: #6a5acd;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .button {
+
+            background: #4b0082;
+
+            color: white;
+
+            border: none;
+
+            padding: 12px 22px;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #351060;
+        }
+
+        .button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        /* MESSAGE */
+
+        #message {
+
+            display: none;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            margin-bottom: 20px;
+
+            font-weight: bold;
+        }
+
+        .success {
+            display: block !important;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            display: block !important;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* PLAN */
+
+        .plan {
+
+            border: 1px solid #ddd;
+
+            border-left: 5px solid #6a5acd;
+
+            border-radius: 7px;
+
+            padding: 18px;
+
+            margin-bottom: 15px;
+
+            background: #faf9ff;
+        }
+
+        .plan h3 {
+
+            color: #4b0082;
+
+            margin-bottom: 12px;
+        }
+
+        .plan p {
+
+            margin: 7px 0;
+
+            color: #444;
+        }
+
+        .empty {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+        }
+
+        .loading {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #777;
+        }
+
+        @media(max-width:700px) {
+
+            .navbar {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .main {
+                width: 94%;
+            }
+
+            .right {
+                gap: 7px;
+            }
+
+            #studentName {
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+        Zero Failure Academic Support
+    </div>
+
+    <div class="right">
+
+        <span id="studentName">
+            Student
+        </span>
+
+        <button
+            class="logout"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<div class="main">
+
+
+    <div class="heading">
+
+        <h1>
+            Study Plan
+        </h1>
+
+        <p>
+            Create and manage your academic study plans.
+        </p>
+
+    </div>
+
+
+
+    <!-- MESSAGE -->
+
+    <div id="message"></div>
+
+
+
+    <!-- =========================================
+         CREATE PLAN
+    ========================================== -->
+
+    <div class="card">
+
+        <h2>
+            Create Study Plan
+        </h2>
+
+
+        <div class="form-group">
+
+            <label>
+                Subject
+            </label>
+
+            <select id="subject">
+
+                <option value="">
+                    Select Subject
+                </option>
+
+                <option value="Python Programming">
+                    Python Programming
+                </option>
+
+                <option value="Database Management">
+                    Database Management
+                </option>
+
+                <option value="Web Development">
+                    Web Development
+                </option>
+
+                <option value="Artificial Intelligence">
+                    Artificial Intelligence
+                </option>
+
+                <option value="Computer Networks with Machine Learning">
+                    Computer Networks with Machine Learning
+                </option>
+
+                <option value="Big Data Analysis">
+                    Big Data Analysis
+                </option>
+
+                <option value="Next Generation Technology">
+                    Next Generation Technology
+                </option>
+
+                <option value="Internet of Things">
+                    Internet of Things
+                </option>
+
+                <option value="Enterprise Java">
+                    Enterprise Java
+                </option>
+
+                <option value="Research Project">
+                    Research Project
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label>
+                Date
+            </label>
+
+            <input
+                type="date"
+                id="date">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label>
+                Time
+            </label>
+
+            <input
+                type="time"
+                id="time">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label>
+                Study Task
+            </label>
+
+            <textarea
+                id="task"
+                placeholder="Enter your study task">
+            </textarea>
+
+        </div>
+
+
+
+        <button
+            class="button"
+            id="createButton"
+            onclick="createPlan()">
+
+            Create Study Plan
+
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================================
+         EXISTING PLANS
+    ========================================== -->
+
+    <div class="card">
+
+        <h2>
+            My Study Plans
+        </h2>
+
+        <div id="plans">
+
+            <div class="loading">
+                Loading...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================
+   YOUR FLASK PORT
+========================================= */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+
+/* =========================================
+   SHOW MESSAGE
+========================================= */
+
+function showMessage(text, type) {
+
+    const box =
+        document.getElementById("message");
+
+    box.innerText = text;
+
+    box.className = type;
+
+}
+
+
+
+/* =========================================
+   CHECK STUDENT LOGIN
+========================================= */
+
+async function checkLogin() {
+
+    try {
+
+        const response = await fetch(
+            API_URL + "/api/me",
+            {
+                credentials: "include"
+            }
+        );
+
+
+        if (response.status === 401) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " + response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "ME:",
+            data
+        );
+
+
+        if (!data.loggedIn) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        if (
+            !data.user ||
+            data.user.role !== "student"
+        ) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            data.user.name || "Student";
+
+
+        return true;
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        showMessage(
+            "Flask server is not responding on port 5000.",
+            "error"
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+/* =========================================
+   LOAD PLANS
+========================================= */
+
+async function loadPlans() {
+
+    const plansDiv =
+        document.getElementById("plans");
+
+
+    plansDiv.innerHTML =
+        '<div class="loading">Loading...</div>';
+
+
+    try {
+
+        const response = await fetch(
+
+            API_URL +
+            "/api/student/study-plan",
+
+            {
+                method: "GET",
+
+                credentials: "include"
+            }
+
+        );
+
+
+        console.log(
+            "GET STATUS:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "GET DATA:",
+            data
+        );
+
+
+        if (response.status === 401) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            plansDiv.innerHTML =
+                '<div class="empty">' +
+                (data.message ||
+                "Unable to load study plans.") +
+                '</div>';
+
+            return;
+
+        }
+
+
+        const plans =
+            data.plans || [];
+
+
+        if (plans.length === 0) {
+
+            plansDiv.innerHTML =
+                '<div class="empty">' +
+                'No study plans created yet.' +
+                '</div>';
+
+            return;
+
+        }
+
+
+        plansDiv.innerHTML = "";
+
+
+        plans.forEach(function(plan) {
+
+
+            const div =
+                document.createElement("div");
+
+
+            div.className = "plan";
+
+
+            div.innerHTML =
+
+                "<h3>" +
+                escapeHTML(
+                    plan.subject || "Subject"
+                ) +
+                "</h3>" +
+
+                "<p><strong>Date:</strong> " +
+                escapeHTML(
+                    plan.date || ""
+                ) +
+                "</p>" +
+
+                "<p><strong>Time:</strong> " +
+                escapeHTML(
+                    plan.time || ""
+                ) +
+                "</p>" +
+
+                "<p><strong>Task:</strong> " +
+                escapeHTML(
+                    plan.task || ""
+                ) +
+                "</p>";
+
+
+            plansDiv.appendChild(div);
+
+        });
+
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Load plans error:",
+            error
+        );
+
+
+        plansDiv.innerHTML =
+            '<div class="empty">' +
+            'Unable to load study plans.' +
+            '</div>';
+
+    }
+
+}
+
+
+
+/* =========================================
+   CREATE PLAN
+========================================= */
+
+async function createPlan() {
+
+
+    const subject =
+        document.getElementById(
+            "subject"
+        ).value;
+
+
+    const date =
+        document.getElementById(
+            "date"
+        ).value;
+
+
+    const time =
+        document.getElementById(
+            "time"
+        ).value;
+
+
+    const task =
+        document.getElementById(
+            "task"
+        ).value.trim();
+
+
+
+    /* VALIDATION */
+
+    if (subject === "") {
+
+        showMessage(
+            "Please select a subject.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (date === "") {
+
+        showMessage(
+            "Please select a date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (time === "") {
+
+        showMessage(
+            "Please select a time.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (task === "") {
+
+        showMessage(
+            "Please enter study task.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    const button =
+        document.getElementById(
+            "createButton"
+        );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Saving...";
+
+
+
+    try {
+
+
+        const response = await fetch(
+
+            API_URL +
+            "/api/student/study-plan",
+
+            {
+
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    subject: subject,
+
+                    date: date,
+
+                    time: time,
+
+                    task: task
+
+                })
+
+            }
+
+        );
+
+
+        console.log(
+            "POST STATUS:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "POST DATA:",
+            data
+        );
+
+
+        if (response.status === 401) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            showMessage(
+
+                data.message ||
+                "Unable to create study plan.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        if (data.success) {
+
+
+            showMessage(
+
+                "Study plan created successfully!",
+
+                "success"
+
+            );
+
+
+            /* CLEAR FORM */
+
+            document.getElementById(
+                "subject"
+            ).value = "";
+
+
+            document.getElementById(
+                "date"
+            ).value = "";
+
+
+            document.getElementById(
+                "time"
+            ).value = "";
+
+
+            document.getElementById(
+                "task"
+            ).value = "";
+
+
+            /* LOAD AGAIN */
+
+            loadPlans();
+
+
+        }
+
+
+    }
+
+    catch(error) {
+
+
+        console.error(
+            "Create plan error:",
+            error
+        );
+
+
+        showMessage(
+
+            "Cannot connect to Flask server on port 5000.",
+
+            "error"
+
+        );
+
+    }
+
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "Create Study Plan";
+
+    }
+
+}
+
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout() {
+
+    try {
+
+        await fetch(
+
+            API_URL + "/api/logout",
+
+            {
+
+                method: "POST",
+
+                credentials: "include"
+
+            }
+
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(error);
+
+    }
+
+
+    window.location.href =
+        API_URL + "/login.html";
+
+}
+
+
+
+/* =========================================
+   HTML ESCAPE
+========================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
+
+
+
+/* =========================================
+   START PAGE
+========================================= */
+
+window.onload = async function() {
+
+    const loggedIn =
+        await checkLogin();
+
+
+    if (loggedIn) {
+
+        loadPlans();
+
+    }
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications | Zero Failure Academic Support</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4b0082,
+                    #6a5acd
+                );
+
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+
+            background: white;
+
+            padding: 18px 30px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0,0,0,0.2);
+
+        }
+
+
+        .logo {
+
+            color: #4b0082;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+
+        .right-section {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        #studentName {
+
+            color: #4b0082;
+
+            font-weight: bold;
+
+        }
+
+
+        .logout-btn {
+
+            background: #4b0082;
+
+            color: white;
+
+            border: none;
+
+            padding: 9px 17px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+        }
+
+
+        .logout-btn:hover {
+
+            background: #35105f;
+
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+
+            width: 90%;
+
+            max-width: 1000px;
+
+            margin: 35px auto;
+
+        }
+
+
+        .page-heading {
+
+            color: white;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .page-heading h1 {
+
+            font-size: 30px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .page-heading p {
+
+            font-size: 15px;
+
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0,0,0,0.2);
+
+        }
+
+
+        .card-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .card-header h2 {
+
+            color: #4b0082;
+
+        }
+
+
+        .refresh-btn {
+
+            background: #eee;
+
+            color: #4b0082;
+
+            border: none;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+        }
+
+
+        .refresh-btn:hover {
+
+            background: #ddd;
+
+        }
+
+
+        /* =========================
+           NOTIFICATION
+        ========================= */
+
+        .notification {
+
+            border-left: 5px solid #6a5acd;
+
+            background: #f8f7ff;
+
+            padding: 18px;
+
+            margin-bottom: 15px;
+
+            border-radius: 7px;
+
+        }
+
+
+        .notification-title {
+
+            color: #4b0082;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .notification-message {
+
+            color: #444;
+
+            line-height: 1.5;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .notification-date {
+
+            color: #777;
+
+            font-size: 13px;
+
+        }
+
+
+        .notification-type {
+
+            display: inline-block;
+
+            background: #6a5acd;
+
+            color: white;
+
+            padding: 4px 9px;
+
+            border-radius: 12px;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        /* =========================
+           EMPTY / LOADING
+        ========================= */
+
+        .empty {
+
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #777;
+
+        }
+
+
+        .empty h3 {
+
+            color: #4b0082;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .loading {
+
+            text-align: center;
+
+            padding: 35px;
+
+            color: #777;
+
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        #message {
+
+            display: none;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            margin-bottom: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        .success {
+
+            display: block !important;
+
+            background: #d4edda;
+
+            color: #155724;
+
+        }
+
+
+        .error {
+
+            display: block !important;
+
+            background: #f8d7da;
+
+            color: #721c24;
+
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width:700px) {
+
+            .navbar {
+
+                padding: 15px;
+
+            }
+
+
+            .logo {
+
+                font-size: 17px;
+
+            }
+
+
+            #studentName {
+
+                font-size: 12px;
+
+            }
+
+
+            .container {
+
+                width: 94%;
+
+            }
+
+
+            .card-header {
+
+                align-items: flex-start;
+
+                gap: 10px;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<div class="navbar">
+
+
+    <div class="logo">
+
+        Zero Failure Academic Support
+
+    </div>
+
+
+    <div class="right-section">
+
+        <span id="studentName">
+
+            Loading...
+
+        </span>
+
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<div class="container">
+
+
+    <div class="page-heading">
+
+        <h1>
+            Notifications
+        </h1>
+
+        <p>
+            View important academic notifications and updates.
+        </p>
+
+    </div>
+
+
+
+    <div id="message"></div>
+
+
+
+    <!-- =========================
+         NOTIFICATIONS CARD
+    ========================= -->
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+            <h2>
+                My Notifications
+            </h2>
+
+
+            <button
+                class="refresh-btn"
+                onclick="loadNotifications()">
+
+                ↻ Refresh
+
+            </button>
+
+        </div>
+
+
+        <div id="notificationsContainer">
+
+            <div class="loading">
+
+                Loading notifications...
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* ==================================================
+   FLASK SERVER
+================================================== */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+
+/* ==================================================
+   SHOW MESSAGE
+================================================== */
+
+function showMessage(message, type) {
+
+    const box =
+        document.getElementById("message");
+
+
+    box.innerText = message;
+
+
+    box.className = type;
+
+
+    setTimeout(function() {
+
+        box.style.display = "none";
+
+    }, 4000);
+
+}
+
+
+
+/* ==================================================
+   CHECK STUDENT LOGIN
+================================================== */
+
+async function checkStudent() {
+
+    try {
+
+        const response = await fetch(
+
+            API_URL + "/api/me",
+
+            {
+                method: "GET",
+
+                credentials: "include"
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "ME RESPONSE:",
+            data
+        );
+
+
+        if (!data.loggedIn) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        if (
+            !data.user ||
+            data.user.role !== "student"
+        ) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return false;
+
+        }
+
+
+        document.getElementById(
+            "studentName"
+        ).innerText =
+            data.user.name || "Student";
+
+
+        return true;
+
+    }
+
+
+    catch(error) {
+
+        console.error(
+            "Login check error:",
+            error
+        );
+
+
+        showMessage(
+            "Cannot connect to Flask server on port 5000.",
+            "error"
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+/* ==================================================
+   LOAD NOTIFICATIONS
+================================================== */
+
+async function loadNotifications() {
+
+    const container =
+        document.getElementById(
+            "notificationsContainer"
+        );
+
+
+    container.innerHTML =
+        '<div class="loading">Loading notifications...</div>';
+
+
+    try {
+
+
+        const response = await fetch(
+
+            API_URL +
+            "/api/student/notifications",
+
+            {
+
+                method: "GET",
+
+                credentials: "include"
+
+            }
+
+        );
+
+
+        console.log(
+            "Notifications Status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Notifications Response:",
+            data
+        );
+
+
+        /* =========================
+           LOGIN EXPIRED
+        ========================= */
+
+        if (response.status === 401) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+
+        }
+
+
+        /* =========================
+           OTHER ERROR
+        ========================= */
+
+        if (!response.ok) {
+
+            container.innerHTML =
+
+                '<div class="empty">' +
+
+                '<h3>Unable to load notifications</h3>' +
+
+                '<p>' +
+
+                (data.message ||
+                "Server error")
+
+                +
+
+                '</p>' +
+
+                '</div>';
+
+            return;
+
+        }
+
+
+        /* =========================
+           GET NOTIFICATIONS
+        ========================= */
+
+        const notifications =
+            data.notifications || [];
+
+
+        /* =========================
+           NO NOTIFICATIONS
+        ========================= */
+
+        if (
+            notifications.length === 0
+        ) {
+
+            container.innerHTML =
+
+                '<div class="empty">' +
+
+                '<h3>No Notifications</h3>' +
+
+                '<p>' +
+
+                'You currently have no notifications.'
+
+                +
+
+                '</p>' +
+
+                '</div>';
+
+            return;
+
+        }
+
+
+        /* =========================
+           DISPLAY NOTIFICATIONS
+        ========================= */
+
+        container.innerHTML = "";
+
+
+        notifications.forEach(
+            function(notification) {
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "notification";
+
+
+                const title =
+                    notification.title ||
+                    notification.subject ||
+                    "Notification";
+
+
+                const message =
+                    notification.message ||
+                    notification.text ||
+                    notification.content ||
+                    "No message";
+
+
+                const type =
+                    notification.type ||
+                    "Academic";
+
+
+                let date = "";
+
+
+                if (
+                    notification.createdAt
+                ) {
+
+                    try {
+
+                        date =
+                            new Date(
+                                notification.createdAt
+                            ).toLocaleString();
+
+                    }
+
+                    catch(error) {
+
+                        date =
+                            notification.createdAt;
+
+                    }
+
+                }
+
+
+                div.innerHTML =
+
+                    '<div class="notification-type">' +
+
+                    escapeHTML(type) +
+
+                    '</div>' +
+
+
+                    '<div class="notification-title">' +
+
+                    escapeHTML(title) +
+
+                    '</div>' +
+
+
+                    '<div class="notification-message">' +
+
+                    escapeHTML(message) +
+
+                    '</div>' +
+
+
+                    '<div class="notification-date">' +
+
+                    (
+                        date
+                        ?
+                        "Date: " + escapeHTML(date)
+                        :
+                        ""
+                    ) +
+
+                    '</div>';
+
+
+                container.appendChild(div);
+
+            }
+        );
+
+    }
+
+
+    catch(error) {
+
+
+        console.error(
+            "Notification error:",
+            error
+        );
+
+
+        container.innerHTML =
+
+            '<div class="empty">' +
+
+            '<h3>Cannot Load Notifications</h3>' +
+
+            '<p>' +
+
+            'Please make sure Flask is running on port 5000.'
+
+            +
+
+            '</p>' +
+
+            '</div>';
+
+    }
+
+}
+
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+async function logout() {
+
+    try {
+
+        await fetch(
+
+            API_URL + "/api/logout",
+
+            {
+
+                method: "POST",
+
+                credentials: "include"
+
+            }
+
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Logout error:",
+            error
+        );
+
+    }
+
+
+    window.location.href =
+        API_URL + "/login.html";
+
+}
+
+
+
+/* ==================================================
+   HTML ESCAPE
+================================================== */
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ==================================================
+   PAGE LOAD
+================================================== */
+
+window.onload = async function() {
+
+
+    const loggedIn =
+        await checkStudent();
+
+
+    if (loggedIn) {
+
+        loadNotifications();
+
+    }
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>

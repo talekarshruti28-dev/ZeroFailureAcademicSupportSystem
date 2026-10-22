@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Zero-Failure Login</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #5420a8, #7b3fc5);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: white;
+    width: 360px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+h1 {
+    text-align: center;
+    color: #5420a8;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #5420a8;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3d147d;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+a {
+    color: #5420a8;
+}
+
+.message {
+    text-align: center;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Zero-Failure</h1>
+
+<p class="subtitle">
+Academic Support System
+</p>
+
+<form id="loginForm">
+
+<input
+    type="email"
+    id="email"
+    placeholder="Email"
+    required
+>
+
+<input
+    type="password"
+    id="password"
+    placeholder="Password"
+    required
+>
+
+<button type="submit" id="loginButton">
+Login
+</button>
+
+</form>
+
+<p class="message" id="message"></p>
+
+<p style="text-align:center">
+
+Don't have an account?
+
+<a href="/register.html">
+Register
+</a>
+
+</p>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ZERO-FAILURE LOGIN
+   Works from BOTH:
+
+   http://127.0.0.1:5500
+   http://127.0.0.1:5000
+
+   Flask API is always on port 5000.
+   ========================================================= */
+
+
+/* Flask backend URL */
+
+const API_URL = "http://127.0.0.1:5000";
+
+
+/* Login form */
+
+document.getElementById("loginForm").addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        /* Get values */
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        const message =
+            document.getElementById("message");
+
+        const loginButton =
+            document.getElementById("loginButton");
+
+
+        /* Clear previous message */
+
+        message.innerText = "";
+
+        loginButton.disabled = true;
+        loginButton.innerText = "Logging in...";
+
+
+        try {
+
+            /* =================================================
+               SEND LOGIN REQUEST TO FLASK PORT 5000
+               ================================================= */
+
+            const response = await fetch(
+                API_URL + "/api/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+
+            /* Check HTTP response */
+
+            if (!response.ok) {
+
+                let errorMessage =
+                    "Login request failed.";
+
+                try {
+
+                    const errorData =
+                        await response.json();
+
+                    if (errorData.message) {
+                        errorMessage =
+                            errorData.message;
+                    }
+
+                } catch (e) {
+                    /* Ignore JSON error */
+                }
+
+                message.innerText = errorMessage;
+
+                return;
+            }
+
+
+            /* Convert response to JSON */
+
+            const data =
+                await response.json();
+
+
+            /* =================================================
+               LOGIN FAILED
+               ================================================= */
+
+            if (!data.success) {
+
+                message.innerText =
+                    data.message ||
+                    "Invalid email or password.";
+
+                return;
+            }
+
+
+            /* =================================================
+               LOGIN SUCCESSFUL
+               ================================================= */
+
+            message.innerText =
+                "Login successful. Opening dashboard...";
+
+
+            /* Student */
+
+            if (data.role === "student") {
+
+                window.location.href =
+                    API_URL + "/student/dashboard.html";
+
+            }
+
+
+            /* Teacher */
+
+            else if (data.role === "teacher") {
+
+                window.location.href =
+                    API_URL + "/teacher/dashboard.html";
+
+            }
+
+
+            /* Parent */
+
+            else if (data.role === "parent") {
+
+                window.location.href =
+                    API_URL + "/parent/dashboard.html";
+
+            }
+
+
+            /* Unknown role */
+
+            else {
+
+                message.innerText =
+                    "Login successful, but user role was not recognized.";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SERVER CONNECTION ERROR
+           ===================================================== */
+
+        catch (error) {
+
+            console.error(
+                "LOGIN CONNECTION ERROR:",
+                error
+            );
+
+
+            message.innerText =
+                "Cannot connect to server. " +
+                "Please make sure Flask is running on port 5000.";
+
+        }
+
+
+        finally {
+
+            loginButton.disabled = false;
+            loginButton.innerText = "Login";
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

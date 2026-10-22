@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Parent Dashboard</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f5f3fa;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.nav {
+    background: white;
+    padding: 15px;
+}
+
+.nav a {
+    margin-right: 15px;
+    color: #5420a8;
+}
+
+.container {
+    padding: 25px;
+}
+
+.card {
+    display: inline-block;
+    background: white;
+    padding: 25px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>Parent Dashboard</h2>
+
+<p id="parentName">
+Loading...
+</p>
+
+</div>
+
+<div class="nav">
+
+<a href="/parent/dashboard.html">
+Dashboard
+</a>
+
+<a href="/parent/performance.html">
+Performance
+</a>
+
+<a href="/parent/attendance.html">
+Attendance
+</a>
+
+<a href="http://127.0.0.1:5000/chatbot.html">
+    🤖 AI Chatbot
+</a>
+
+<a href="/parent/notifications.html">
+Notifications
+</a>
+
+<a href="/login.html"
+onclick="logout(event)">
+Logout
+</a>
+
+</div>
+
+<div class="container">
+
+<h2 id="childName">
+Loading child...
+</h2>
+
+<div class="card">
+
+<h3>Attendance</h3>
+
+<p id="attendance">
+0%
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Average Marks</h3>
+
+<p id="marks">
+0%
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Risk Level</h3>
+
+<p id="risk">
+-
+</p>
+
+</div>
+
+</div>
+
+<script>
+
+async function loadDashboard() {
+
+    const me =
+        await fetch(
+            "/api/me"
+        );
+
+    const user =
+        await me.json();
+
+    if (!user.loggedIn) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    document.getElementById(
+        "parentName"
+    ).innerText =
+        "Welcome, " +
+        user.user.name;
+
+
+    const performance =
+        await fetch(
+            "/api/parent/performance"
+        );
+
+    const data =
+        await performance.json();
+
+    if (!data.success) {
+
+        document.getElementById(
+            "childName"
+        ).innerText =
+            data.message;
+
+        return;
+    }
+
+    document.getElementById(
+        "childName"
+    ).innerText =
+        data.child.name;
+
+    document.getElementById(
+        "attendance"
+    ).innerText =
+        data.prediction.attendance +
+        "%";
+
+    document.getElementById(
+        "marks"
+    ).innerText =
+        data.prediction.averageMarks +
+        "%";
+
+    document.getElementById(
+        "risk"
+    ).innerText =
+        data.prediction.risk;
+}
+
+
+async function logout(event) {
+
+    event.preventDefault();
+
+    await fetch(
+        "/api/logout",
+        {
+            method: "POST"
+        }
+    );
+
+    window.location.href =
+        "/login.html";
+}
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

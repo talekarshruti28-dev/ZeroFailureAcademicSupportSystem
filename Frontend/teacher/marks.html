@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Teacher Marks</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f3fa;
+    margin: 0;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+}
+
+button {
+    padding: 10px;
+    background: #5420a8;
+    color: white;
+    border: none;
+}
+
+table {
+    width: 100%;
+    background: white;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>Marks Management</h2>
+</div>
+
+<div class="container">
+
+<input
+    id="studentId"
+    placeholder="Student ID"
+>
+
+<input
+    id="subject"
+    placeholder="Subject"
+>
+
+<input
+    id="exam"
+    placeholder="Exam"
+>
+
+<input
+    id="obtained"
+    type="number"
+    placeholder="Obtained Marks"
+>
+
+<input
+    id="maximum"
+    type="number"
+    placeholder="Maximum Marks"
+>
+
+<button onclick="saveMarks()">
+Save Marks
+</button>
+
+<p id="message"></p>
+
+<hr>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Student</th>
+<th>Subject</th>
+<th>Exam</th>
+<th>Marks</th>
+<th>Percentage</th>
+</tr>
+
+</thead>
+
+<tbody id="marksTable">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function saveMarks() {
+
+    const data = {
+
+        studentId:
+            document.getElementById(
+                "studentId"
+            ).value,
+
+        subject:
+            document.getElementById(
+                "subject"
+            ).value,
+
+        exam:
+            document.getElementById(
+                "exam"
+            ).value,
+
+        obtained:
+            document.getElementById(
+                "obtained"
+            ).value,
+
+        maximum:
+            document.getElementById(
+                "maximum"
+            ).value
+    };
+
+    const response =
+        await fetch(
+            "/api/teacher/marks",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(data)
+            }
+        );
+
+    const result =
+        await response.json();
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        result.message;
+
+    if (result.success) {
+
+        loadMarks();
+    }
+}
+
+
+async function loadMarks() {
+
+    const response =
+        await fetch(
+            "/api/teacher/marks"
+        );
+
+    const data =
+        await response.json();
+
+    const table =
+        document.getElementById(
+            "marksTable"
+        );
+
+    table.innerHTML = "";
+
+    data.records.forEach(
+        mark => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${mark.studentName}
+                    </td>
+
+                    <td>
+                        ${mark.subject}
+                    </td>
+
+                    <td>
+                        ${mark.exam}
+                    </td>
+
+                    <td>
+                        ${mark.obtained}/${mark.maximum}
+                    </td>
+
+                    <td>
+                        ${mark.percentage}%
+                    </td>
+
+                </tr>
+            `;
+        }
+    );
+}
+
+loadMarks();
+
+</script>
+
+</body>
+</html>

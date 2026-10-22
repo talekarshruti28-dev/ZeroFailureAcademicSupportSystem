@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Student Marks</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f3fa;
+    margin: 0;
+}
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    padding: 25px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #5420a8;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h2>My Marks</h2>
+</div>
+
+<div class="container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Subject</th>
+<th>Exam</th>
+<th>Obtained</th>
+<th>Maximum</th>
+<th>Percentage</th>
+</tr>
+
+</thead>
+
+<tbody id="marksTable">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function loadMarks() {
+
+    const response =
+        await fetch(
+            "/api/student/marks"
+        );
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+    }
+
+    const table =
+        document.getElementById(
+            "marksTable"
+        );
+
+    table.innerHTML = "";
+
+    data.records.forEach(
+        mark => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${mark.subject || "-"}
+                    </td>
+
+                    <td>
+                        ${mark.exam || "-"}
+                    </td>
+
+                    <td>
+                        ${mark.obtained}
+                    </td>
+
+                    <td>
+                        ${mark.maximum}
+                    </td>
+
+                    <td>
+                        ${mark.percentage}%
+                    </td>
+
+                </tr>
+
+            `;
+        }
+    );
+}
+
+loadMarks();
+
+</script>
+
+</body>
+</html>

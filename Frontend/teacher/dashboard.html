@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Teacher Dashboard</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f5f3fa;
+}
+
+/* HEADER */
+
+.header {
+    background: #5420a8;
+    color: white;
+    padding: 20px;
+}
+
+/* NAVIGATION */
+
+.nav {
+    background: white;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.nav a {
+    margin-right: 15px;
+    color: #5420a8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav a:hover {
+    color: #7b3fe4;
+}
+
+/* CONTAINER */
+
+.container {
+    padding: 25px;
+}
+
+/* CARDS */
+
+.card {
+    display: inline-block;
+    vertical-align: top;
+    background: white;
+    padding: 25px;
+    margin: 10px;
+    border-radius: 10px;
+    min-width: 180px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    color: #5420a8;
+    margin-top: 0;
+}
+
+.card p {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* QUIZ CARD */
+
+.quiz-card {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.quiz-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(84,32,168,0.2);
+}
+
+.quiz-icon {
+    font-size: 35px;
+}
+
+.quiz-card p {
+    font-size: 15px;
+    font-weight: normal;
+    color: #555;
+}
+
+.quiz-button {
+    background: #5420a8;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.quiz-button:hover {
+    background: #6d35c7;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+<h2>Teacher Dashboard</h2>
+
+<p id="teacherName">
+Loading...
+</p>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<div class="nav">
+
+<a href="/teacher/dashboard.html">
+Dashboard
+</a>
+
+<a href="/teacher/students.html">
+Students
+</a>
+
+<a href="/teacher/attendance.html">
+Attendance
+</a>
+
+<a href="/teacher/marks.html">
+Marks
+</a>
+
+<!-- QUIZZES ADDED -->
+
+<a href="/teacher/quizzes.html">
+Quizzes
+</a>
+
+<a href="http://127.0.0.1:5000/chatbot.html">
+        🤖 AI Chatbot
+    </a>
+
+<a href="/teacher/predictions.html">
+Predictions
+</a>
+
+<a href="/teacher/reports.html">
+Reports
+</a>
+
+<a href="/login.html"
+   onclick="logout(event)">
+Logout
+</a>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div class="container">
+
+
+<!-- TOTAL STUDENTS -->
+
+<div class="card">
+
+<h3>Total Students</h3>
+
+<p id="students">
+0
+</p>
+
+</div>
+
+
+<!-- HIGH RISK -->
+
+<div class="card">
+
+<h3>High Risk</h3>
+
+<p id="highRisk">
+0
+</p>
+
+</div>
+
+
+<!-- MEDIUM RISK -->
+
+<div class="card">
+
+<h3>Medium Risk</h3>
+
+<p id="mediumRisk">
+0
+</p>
+
+</div>
+
+
+<!-- LOW RISK -->
+
+<div class="card">
+
+<h3>Low Risk</h3>
+
+<p id="lowRisk">
+0
+</p>
+
+</div>
+
+
+<!-- QUIZ CARD -->
+
+<div class="card quiz-card"
+     onclick="openQuizzes()">
+
+<div class="quiz-icon">
+📝
+</div>
+
+<h3>
+Quizzes
+</h3>
+
+<p>
+View student quiz scores, percentages and performance.
+</p>
+
+<button class="quiz-button">
+Open Quizzes
+</button>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* API URL */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+/* LOAD DASHBOARD */
+
+async function loadDashboard() {
+
+    try {
+
+        const me =
+            await fetch(
+                API_URL + "/api/me",
+                {
+                    credentials: "include"
+                }
+            );
+
+
+        const user =
+            await me.json();
+
+
+        /* CHECK LOGIN */
+
+        if (!user.loggedIn) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+        }
+
+
+        /* CHECK TEACHER */
+
+        if (
+            user.user &&
+            user.user.role !== "teacher"
+        ) {
+
+            window.location.href =
+                API_URL + "/login.html";
+
+            return;
+        }
+
+
+        /* TEACHER NAME */
+
+        document.getElementById(
+            "teacherName"
+        ).innerText =
+            "Welcome, " +
+            user.user.name;
+
+
+        /* LOAD PREDICTIONS */
+
+        const response =
+            await fetch(
+                API_URL +
+                "/api/teacher/predictions",
+                {
+                    credentials: "include"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        const predictions =
+            data.predictions || [];
+
+
+        /* TOTAL STUDENTS */
+
+        document.getElementById(
+            "students"
+        ).innerText =
+            predictions.length;
+
+
+        /* HIGH RISK */
+
+        document.getElementById(
+            "highRisk"
+        ).innerText =
+            predictions.filter(
+                x => x.risk === "High"
+            ).length;
+
+
+        /* MEDIUM RISK */
+
+        document.getElementById(
+            "mediumRisk"
+        ).innerText =
+            predictions.filter(
+                x => x.risk === "Medium"
+            ).length;
+
+
+        /* LOW RISK */
+
+        document.getElementById(
+            "lowRisk"
+        ).innerText =
+            predictions.filter(
+                x => x.risk === "Low"
+            ).length;
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Dashboard error:",
+            error
+        );
+
+        document.getElementById(
+            "teacherName"
+        ).innerText =
+            "Unable to load dashboard";
+
+    }
+
+}
+
+
+/* OPEN QUIZZES */
+
+function openQuizzes() {
+
+    window.location.href =
+        API_URL +
+        "/teacher/quizzes.html";
+
+}
+
+
+/* LOGOUT */
+
+async function logout(event) {
+
+    event.preventDefault();
+
+
+    try {
+
+        await fetch(
+            API_URL + "/api/logout",
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+
+    window.location.href =
+        API_URL + "/login.html";
+
+}
+
+
+/* START */
+
+loadDashboard();
+
+
+</script>
+
+
+</body>
+
+</html>
